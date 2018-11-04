@@ -17,6 +17,7 @@ export class HueSliderComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.draw();
     this.drawHandle();
+    this.emitColor(this.selectedHeight);
   }
 
   draw() {

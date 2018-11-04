@@ -14,11 +14,8 @@ export class DialogComponent {
   public selectedPosition;
 
   constructor() {
-    this.hue = [Math.floor(Math.random() * 256),
-      Math.floor(Math.random() * 256),
-      Math.floor(Math.random() * 256)];
-    this.selectedPosition = { x: Math.floor(Math.random() * 256), y: Math.floor(Math.random() * 256) };
-    this.selectedHeight = Math.floor(Math.random() * 256);
+    this.selectedPosition = { x: Math.floor(Math.random() * 255), y: Math.floor(Math.random() * 255) };
+    this.selectedHeight = Math.floor(Math.random() * 255);
   }
 
   public colorHueChange(color) {

@@ -23,6 +23,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     this.draw();
+    this.drawHandle();
   }
 
   draw() {
@@ -49,7 +50,9 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
     this.ctx.fillStyle = blackGrad;
     this.ctx.fillRect(0, 0, width, height);
+  }
 
+  drawHandle() {
     if (this.selectedPosition) {
       this.ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
       this.ctx.beginPath();
@@ -66,19 +69,14 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
       if (pos) {
         this.color.emit(this.getColorAtPosition(pos.x, pos.y));
       }
+
+      this.drawHandle();
     }
   }
 
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(evt: MouseEvent) {
     this.mousedown = false;
-  }
-
-  onMouseDown(evt: MouseEvent) {
-    this.mousedown = true;
-    this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
-    this.draw();
-    this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
   }
 
   canvasMouseDown(evt: MouseEvent) {
@@ -126,6 +124,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
       this.draw();
       this.emitColor(x, y);
+      this.drawHandle();
     }
   }
 
