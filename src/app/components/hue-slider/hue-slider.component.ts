@@ -17,7 +17,6 @@ import {
   templateUrl: './hue-slider.component.html',
   styleUrls: ['./hue-slider.component.css']
 })
-
 export class HueSliderComponent implements OnInit, AfterViewInit, AfterViewChecked {
   @Input() selectedHeight: number;
   @Output() colorChanged: EventEmitter<any> = new EventEmitter();

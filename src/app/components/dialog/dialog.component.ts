@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { rgbToHex } from '../../helpers';
 
@@ -8,7 +8,6 @@ import { rgbToHex } from '../../helpers';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss']
 })
-
 export class DialogComponent {
   public hue: Uint8ClampedArray;
   public color: Uint8ClampedArray;
@@ -18,7 +17,7 @@ export class DialogComponent {
   public selectedPosition: { x: number, y: number };
 
   constructor(public dialogRef: MatDialogRef<DialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { color: string | null }) {
+              @Inject(MAT_DIALOG_DATA) public data) {
     this.selectedPosition = { x: Math.floor(Math.random() * 255), y: Math.floor(Math.random() * 255) };
     this.selectedHeight = Math.floor(Math.random() * 255);
   }

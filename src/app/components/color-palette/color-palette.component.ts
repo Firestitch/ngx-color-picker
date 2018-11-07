@@ -17,7 +17,6 @@ import {
   templateUrl: './color-palette.component.html',
   styleUrls: ['./color-palette.component.css']
 })
-
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };
   @Input() hue: Uint8ClampedArray;

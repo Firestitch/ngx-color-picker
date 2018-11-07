@@ -16,7 +16,6 @@ import { FsColorPickerDirective } from './directives/';
     MatDialogModule,
     MatButtonModule,
     FormsModule
-
   ],
   exports: [
     DialogComponent,
