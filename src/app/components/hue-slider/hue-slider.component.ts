@@ -1,26 +1,62 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, Output, HostListener, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  Output,
+  HostListener,
+  EventEmitter,
+  Input,
+  OnInit,
+  AfterViewChecked
+} from '@angular/core';
+
 
 @Component({
-  selector: 'app-hue-slider',
+  selector: 'cp-hue-slider',
   templateUrl: './hue-slider.component.html',
   styleUrls: ['./hue-slider.component.css']
 })
-export class HueSliderComponent implements AfterViewInit {
-  @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
-  @Output() color: EventEmitter<any> = new EventEmitter();
-  @Input() selectedHeight: number;
-  public value = 0;
-  public rect;
-  private ctx: CanvasRenderingContext2D;
-  private mousedown: boolean = false;
 
-  ngAfterViewInit() {
-    this.draw();
-    this.drawHandle();
-    this.emitColor(this.selectedHeight);
+export class HueSliderComponent implements OnInit, AfterViewInit, AfterViewChecked {
+  @Input() selectedHeight: number;
+  @Output() colorChanged: EventEmitter<any> = new EventEmitter();
+
+  @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
+
+  private rect: ClientRect;
+  private ctx: CanvasRenderingContext2D;
+
+  private mousedown = false;
+
+  constructor() {}
+
+  public ngOnInit() {
   }
 
-  draw() {
+  public ngAfterViewInit() {
+    this.draw();
+    this.drawHandle();
+    // @todo
+    setTimeout(() => {
+      this.emitColor(this.selectedHeight);
+    }, 0);
+  }
+
+  public ngAfterViewChecked() {
+  }
+
+  @HostListener('window:mouseup', ['$event'])
+  public onMouseUp(evt: MouseEvent) {
+    this.mousedown = false;
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  public onMouseMove(evt: MouseEvent) {
+    this.mouseMove(evt);
+  }
+
+  public draw() {
     if (!this.ctx) {
       this.ctx = this.canvas.nativeElement.getContext('2d');
     }
@@ -46,44 +82,47 @@ export class HueSliderComponent implements AfterViewInit {
     this.ctx.closePath();
   }
 
-  drawHandle() {
+  public drawHandle() {
     this.ctx.beginPath();
-    this.ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
     this.ctx.lineWidth = 3;
     this.ctx.rect(0, this.selectedHeight - 3, this.canvas.nativeElement.width, 5);
     this.ctx.stroke();
     this.ctx.closePath();
   }
 
-  @HostListener('window:mouseup', ['$event'])
-  onMouseUp(evt: MouseEvent) {
-    this.mousedown = false;
-  }
-
-  canvasMouseDown(evt: MouseEvent) {
+  public canvasMouseDown(evt: MouseEvent) {
     this.mousedown = true;
     this.rect = this.canvas.nativeElement.getBoundingClientRect();
     this.onMouseMove(evt);
   }
 
-  @HostListener('window:mousemove', ['$event'])
-  onMouseMove(evt: MouseEvent) {
+  public emitColor(y: number) {
+    const rgbaColor = this.getColorAtPosition(y);
+    this.colorChanged.emit(rgbaColor);
+  }
+
+  public getColorAtPosition(y: number) {
+    return this.ctx.getImageData(15, y, 1, 1).data;
+  }
+
+  private mouseMove(event: MouseEvent) {
     if (this.mousedown) {
 
-      evt.stopPropagation();
-      evt.preventDefault();
+      event.stopPropagation();
+      event.preventDefault();
 
       const top = this.rect.top;
 
       const height = top + this.canvas.nativeElement.height;
 
-      var y = evt.pageY;
+      let y = event.pageY;
 
-      if(evt.pageY < top) {
+      if (event.pageY < top) {
         y = top;
       }
 
-      if(evt.pageY > (height)) {
+      if (event.pageY > (height)) {
         y = height;
       }
 
@@ -94,14 +133,5 @@ export class HueSliderComponent implements AfterViewInit {
 
       this.drawHandle();
     }
-  }
-
-  emitColor(y: number) {
-    const rgbaColor = this.getColorAtPosition(y);
-    this.color.emit(rgbaColor);
-  }
-
-  getColorAtPosition(y: number) {
-    return this.ctx.getImageData(15, y, 1, 1).data;
   }
 }

@@ -1,9 +1,12 @@
-<mat-tab-group headerPosition="below" [ngStyle]="{ background: colorRgb }">
-  <mat-tab label="HEX"><div class="color" [ngStyle]="{ background: colorRgb }">{{colorHex}}</div></mat-tab>
-  <mat-tab label="RGB"><div class="color" [ngStyle]="{ background: colorRgb }">{{colorRgb}}</div></mat-tab>
+<mat-tab-group headerPosition="below" [style.background]="colorRgb">
+  <mat-tab label="HEX"><div class="color" [style.background]="colorRgb">{{colorHex}}</div></mat-tab>
+  <mat-tab label="RGB"><div class="color" [style.background]="colorRgb">{{colorRgb}}</div></mat-tab>
 </mat-tab-group>
 
 <div class=color-wrapper>
-  <app-color-palette [hue]="hue" (color)="colorPaletteChange($event)" [selectedPosition]="selectedPosition"></app-color-palette>
-  <app-hue-slider (color)="colorHueChange($event)" [selectedHeight]="selectedHeight"></app-hue-slider>
+  <cp-color-palette [hue]="hue" (colorChanged)="colorPaletteChange($event)" [selectedPosition]="selectedPosition"></cp-color-palette>
+  <cp-hue-slider (colorChanged)="colorHueChange($event)" [selectedHeight]="selectedHeight"></cp-hue-slider>
 </div>
+
+<button mat-button (click)="select()">Select</button>
+<button mat-button [mat-dialog-close]="null">Cancel</button>

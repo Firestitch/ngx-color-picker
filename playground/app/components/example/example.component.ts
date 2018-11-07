@@ -5,4 +5,7 @@ import { Component } from '@angular/core';
   templateUrl: 'example.component.html'
 })
 export class ExampleComponent {
+
+  public color = null;
+
 }

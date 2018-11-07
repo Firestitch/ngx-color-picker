@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FsExampleModule } from '@firestitch/example';
 
-import { FsComponentModule } from 'fs-package';
+import { FsColorPickerModule } from 'fs-package';
 
 import { AppMaterialModule } from './material.module';
 import {
@@ -23,7 +23,7 @@ const routes: Routes = [
   bootstrap: [ AppComponent ],
   imports: [
     BrowserModule,
-    FsComponentModule,
+    FsColorPickerModule,
     BrowserAnimationsModule,
     AppMaterialModule,
     FormsModule,

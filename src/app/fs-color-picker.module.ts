@@ -4,36 +4,41 @@ import { CommonModule } from '@angular/common';
 import { DialogComponent,
         ColorPaletteComponent,
         HueSliderComponent } from './components';
-import { MatTabsModule, MatSliderModule } from '@angular/material';
+import { MatTabsModule, MatSliderModule, MatDialogModule , MatButtonModule} from '@angular/material';
 import { FormsModule } from '@angular/forms';
+import { FsColorPickerDirective } from './directives/';
 
 @NgModule({
   imports: [
     CommonModule,
     MatTabsModule,
     MatSliderModule,
+    MatDialogModule,
+    MatButtonModule,
     FormsModule
 
   ],
   exports: [
-    DialogComponent
+    DialogComponent,
+    FsColorPickerDirective
   ],
   entryComponents: [
-    DialogComponent
+    DialogComponent,
   ],
   declarations: [
     DialogComponent,
     HueSliderComponent,
-    ColorPaletteComponent
+    ColorPaletteComponent,
+    FsColorPickerDirective
   ],
   providers: [
     // FsComponentService,
   ],
 })
-export class FsComponentModule {
+export class FsColorPickerModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: FsComponentModule,
+      ngModule: FsColorPickerModule,
       // providers: [FsComponentService]
     };
   }
