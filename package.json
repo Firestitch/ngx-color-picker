@@ -1,10 +1,10 @@
 {
-  "name": "@firestitch/package",
-  "description": "@firestitch/package",
-  "version": "0.1.1",
+  "name": "@firestitch/ngx-color-picker",
+  "description": "@firestitch/ngx-color-picker",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Firestitch/fs-package"
+    "url": "https://github.com/Firestitch/ngx-color-picker"
   },
   "author": {
     "name": "Firestitch",
@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Firestitch/fs-package/issues"
+    "url": "https://github.com/Firestitch/ngx-color-picker/issues"
   },
   "main": "package/index.js",
   "typings": "package/index.d.ts",
