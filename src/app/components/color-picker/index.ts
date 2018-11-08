@@ -1,1 +1,1 @@
-export * from './fs-color-picker.component';
+export * from './color-picker.component';

@@ -8,6 +8,7 @@ import { DialogComponent,
 import {  MatTabsModule,
           MatSliderModule,
           MatDialogModule,
+          MatIconModule,
           MatButtonModule } from '@angular/material';
 import { FormsModule } from '@angular/forms';
 
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     MatSliderModule,
     MatDialogModule,
     MatButtonModule,
+    MatIconModule,
     FormsModule
   ],
   exports: [
@@ -37,8 +39,7 @@ import { FormsModule } from '@angular/forms';
 export class FsColorPickerModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: FsColorPickerModule,
-      // providers: [FsComponentService]
+      ngModule: FsColorPickerModule
     };
   }
 }

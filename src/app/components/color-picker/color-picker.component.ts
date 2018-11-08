@@ -4,8 +4,8 @@ import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: '[fsColorPicker]',
-  template: '<span><div class="preview" *ngIf="ngModel" [ngStyle]="{ background: ngModel }" (click)="openDialog()"></div></span>',
-  styleUrls: ['fs-color-picker.component.css']
+  templateUrl: 'color-picker.component.html',
+  styleUrls: ['color-picker.component.css']
 })
 
 export class FsColorPickerComponent implements AfterViewInit {
@@ -27,7 +27,12 @@ export class FsColorPickerComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', this.el.nativeElement.children[0]);
+    this.el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', this.el.nativeElement.querySelector('.fs-color-picker-preview-wrapper'));
+    this.el.nativeElement.parentElement.parentElement.appendChild(this.el.nativeElement.querySelector('.fs-color-picker-clear-wrapper'));
+  }
+
+  public clear() {
+    this.ngModelChange.emit(null);
   }
 
   public openDialog() {
