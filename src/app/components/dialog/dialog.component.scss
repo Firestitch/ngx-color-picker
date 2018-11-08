@@ -1,6 +1,5 @@
 :host {
   display: inline-block;
-  border: 1px solid #efefef;
 }
 
 ::ng-deep {
@@ -37,6 +36,14 @@
   padding: 7px;
 
   app-color-palette {
+    margin-right: 7px;
+  }
+}
+
+.buttons {
+  padding: 0 7px 7px 7px;
+
+  button {
     margin-right: 7px;
   }
 }

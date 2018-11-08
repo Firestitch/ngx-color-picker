@@ -8,5 +8,7 @@
   <cp-hue-slider (colorChanged)="colorHueChange($event)" [selectedHeight]="selectedHeight"></cp-hue-slider>
 </div>
 
-<button mat-button (click)="select()">Select</button>
-<button mat-button [mat-dialog-close]="null">Cancel</button>
+<div class="buttons">
+  <button mat-raised-button color="primary" (click)="select()">Select</button>
+  <button mat-button [mat-dialog-close]="null" color="primary">Cancel</button>
+</div>

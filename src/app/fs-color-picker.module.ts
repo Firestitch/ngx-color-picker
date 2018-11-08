@@ -3,10 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { DialogComponent,
         ColorPaletteComponent,
-        HueSliderComponent } from './components';
-import { MatTabsModule, MatSliderModule, MatDialogModule , MatButtonModule} from '@angular/material';
+        HueSliderComponent,
+        FsColorPickerComponent } from './components';
+import {  MatTabsModule,
+          MatSliderModule,
+          MatDialogModule,
+          MatButtonModule } from '@angular/material';
 import { FormsModule } from '@angular/forms';
-import { FsColorPickerDirective } from './directives/';
 
 @NgModule({
   imports: [
@@ -19,7 +22,7 @@ import { FsColorPickerDirective } from './directives/';
   ],
   exports: [
     DialogComponent,
-    FsColorPickerDirective
+    FsColorPickerComponent
   ],
   entryComponents: [
     DialogComponent,
@@ -28,11 +31,8 @@ import { FsColorPickerDirective } from './directives/';
     DialogComponent,
     HueSliderComponent,
     ColorPaletteComponent,
-    FsColorPickerDirective
-  ],
-  providers: [
-    // FsComponentService,
-  ],
+    FsColorPickerComponent
+  ]
 })
 export class FsColorPickerModule {
   static forRoot(): ModuleWithProviders {
