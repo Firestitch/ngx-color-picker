@@ -5,7 +5,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FsExampleModule } from '@firestitch/example';
-import { FsClearModule } from '@firestitch/clear';
 
 import { FsColorPickerModule } from 'fs-package';
 
@@ -28,7 +27,6 @@ const routes: Routes = [
     BrowserAnimationsModule,
     AppMaterialModule,
     FormsModule,
-    FsClearModule,
     FsExampleModule.forRoot(),
     RouterModule.forRoot(routes),
   ],
