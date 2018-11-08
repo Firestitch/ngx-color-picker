@@ -10,6 +10,7 @@ import {  MatTabsModule,
           MatDialogModule,
           MatIconModule,
           MatButtonModule } from '@angular/material';
+import { FsClearModule } from '@firestitch/clear';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -20,7 +21,8 @@ import { FormsModule } from '@angular/forms';
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    FsClearModule
   ],
   exports: [
     DialogComponent,

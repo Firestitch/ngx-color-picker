@@ -7,10 +7,6 @@
   cursor: pointer;
 }
 
-.fs-color-picker-clear-wrapper a {
-  color: inherit;
-}
-
 ::ng-deep .fs-color-picker-dialog-container .mat-dialog-container {
   padding: 0;
 }

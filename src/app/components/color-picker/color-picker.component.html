@@ -2,6 +2,4 @@
   <div class="preview" *ngIf="ngModel" [ngStyle]="{ background: ngModel }" (click)="openDialog()"></div>
 </span>
 
-<span class="fs-color-picker-clear-wrapper">
-  <a class="clear" href="javascript:void(0)" *ngIf="ngModel" (click)="clear()"><mat-icon>clear</mat-icon></a>
-</span>
+<fs-clear (clear)="clear()" [show]="ngModel"></fs-clear>

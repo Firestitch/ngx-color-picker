@@ -1,6 +1,6 @@
 {
-  "name": "@firestitch/ngx-color-picker",
-  "description": "@firestitch/ngx-color-picker",
+  "name": "@firestitch/colorpicker",
+  "description": "@firestitch/colorpicker",
   "version": "0.1.0",
   "repository": {
     "type": "git",
@@ -46,6 +46,7 @@
     "@angular/router": "^6.1.9",
     "@compodoc/compodoc": "^1.0.5",
     "@firestitch/example": "^0.3.5",
+    "@firestitch/clear": "^0.1.2",
     "@types/googlemaps": "^3.30.2",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
@@ -77,14 +78,14 @@
     "tslint": "~5.7.0",
     "typescript": "^2.9.2",
     "webpack": "^4.20.2",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.8.26",
+    "rxjs-compat": "^6.3.3"
   },
   "engines": {
     "node": ">=6.0.0"
   },
-  "peerDependencies": {},
-  "dependencies": {
-    "rxjs-compat": "^6.3.3",
-    "tslib": "^1.9.3"
-  }
+  "peerDependencies": {
+    "@firestitch/clear": ">=0.1.2"
+  },
+  "dependencies": {}
 }
