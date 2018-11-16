@@ -18,7 +18,7 @@
       "dom"
     ],
     "paths": {
-      "fs-package": [
+      "ngx-color-picker": [
         "src/public_api.ts"
       ]
     }
