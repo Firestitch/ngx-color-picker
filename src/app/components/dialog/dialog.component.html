@@ -4,8 +4,8 @@
 </mat-tab-group>
 
 <div class=color-wrapper>
-  <cp-color-palette [hue]="hue" (colorChanged)="colorPaletteChange($event)" [selectedPosition]="selectedPosition"></cp-color-palette>
-  <cp-hue-slider (colorChanged)="colorHueChange($event)" [selectedHeight]="selectedHeight"></cp-hue-slider>
+  <cp-color-palette [color]="color" [hue]="hue" (colorChanged)="colorPaletteChange($event)" [selectedPosition]="selectedPosition"></cp-color-palette>
+  <cp-hue-slider [color]="color" (colorChanged)="colorHueChange($event)" [selectedHeight]="selectedHeight"></cp-hue-slider>
 </div>
 
 <div class="buttons">

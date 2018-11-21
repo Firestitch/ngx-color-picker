@@ -26,7 +26,7 @@ export class FsColorPickerComponent implements AfterViewInit {
     this.openDialog();
   }
 
-  ngAfterViewInit() {
+  public ngAfterViewInit() {
     this.el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', this.el.nativeElement.querySelector('.fs-color-picker-preview-wrapper'));
   }
 

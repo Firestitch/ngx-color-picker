@@ -11,6 +11,7 @@ import {
   HostListener
 } from '@angular/core';
 
+import { hexToRGB, rgbToHSV } from '../../helpers/color-helper';
 
 @Component({
   selector: 'cp-color-palette',
@@ -20,6 +21,7 @@ import {
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };
   @Input() hue: Uint8ClampedArray;
+  @Input() color: string;
   @Output() colorChanged: EventEmitter<any> = new EventEmitter(true);
 
   @ViewChild('canvas') public canvas: ElementRef<HTMLCanvasElement>;
@@ -51,9 +53,17 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   public ngOnChanges(changes: SimpleChanges) {
     if (changes.hue) {
       this.draw();
-      const pos = this.selectedPosition;
-      if (pos) {
-        this.colorChanged.emit(this.getColorAtPosition(pos.x, pos.y));
+
+      // if color is selected
+      if (this.color) {
+        this.getPositionByColor();
+        const rgb = hexToRGB(this.color);
+        this.colorChanged.emit([rgb.r, rgb.g, rgb.b, 255]);
+      } else {
+        const pos = this.selectedPosition;
+        if (pos) {
+          this.colorChanged.emit(this.getColorAtPosition(pos.x, pos.y));
+        }
       }
 
       this.drawHandle();
@@ -152,11 +162,28 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
       x = this.canvas.nativeElement.width - (width - x);
       y = this.canvas.nativeElement.height - (height - y);
 
-      this.selectedPosition = { x: x, y: y };
+      this.selectedPosition = { x, y };
 
       this.draw();
       this.emitColor(x, y);
       this.drawHandle();
     }
+  }
+
+  /**
+   * Function for getting position by hex-color
+   */
+  private getPositionByColor() {
+    const height = +this.canvas.nativeElement.height;
+    const width = +this.canvas.nativeElement.width;
+
+    const max = 100;
+    const rgbColor = hexToRGB(this.color);
+    const hsvColor = rgbToHSV(rgbColor.r, rgbColor.g, rgbColor.b);
+
+    const y = height - (hsvColor.value * height / max);
+    const x = hsvColor.saturation * (width - 1) / max;
+
+    this.selectedPosition = { x, y };
   }
 }

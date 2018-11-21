@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { rgbToHex } from '../../helpers';
+import { rgbToHEX } from '../../helpers';
 
 
 @Component({
@@ -8,9 +8,9 @@ import { rgbToHex } from '../../helpers';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss']
 })
-export class DialogComponent {
+export class DialogComponent implements OnInit {
   public hue: Uint8ClampedArray;
-  public color: Uint8ClampedArray;
+  public color = null;
   public colorHex = '';
   public colorRgb = '';
   public selectedHeight: number;
@@ -22,13 +22,16 @@ export class DialogComponent {
     this.selectedHeight = Math.floor(Math.random() * 255);
   }
 
+  public ngOnInit() {
+    this.color = this.data.color;
+  }
+
   public colorHueChange(color: Uint8ClampedArray) {
     this.hue = color;
   }
 
   public colorPaletteChange(color: Uint8ClampedArray) {
-    this.color = color;
-    this.colorHex = rgbToHex(color[0], color[1], color[2]);
+    this.colorHex = rgbToHEX(color[0], color[1], color[2]);
     this.colorRgb = `rgb(${color[0]},${color[1]},${color[2]})`;
   }
 

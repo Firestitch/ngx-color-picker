@@ -11,14 +11,16 @@ import {
   AfterViewChecked
 } from '@angular/core';
 
+import { hexToRGB, rgbToHSL } from '../../helpers/color-helper';
 
 @Component({
   selector: 'cp-hue-slider',
   templateUrl: './hue-slider.component.html',
   styleUrls: ['./hue-slider.component.css']
 })
-export class HueSliderComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
   @Input() selectedHeight: number;
+  @Input() color: string;
   @Output() colorChanged: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
@@ -30,16 +32,19 @@ export class HueSliderComponent implements OnInit, AfterViewInit, AfterViewCheck
 
   constructor() {}
 
-  public ngOnInit() {
-  }
-
   public ngAfterViewInit() {
     this.draw();
-    this.drawHandle();
-    // @todo
-    setTimeout(() => {
+
+    // if color is selected
+    if (this.color) {
+      this.getPositionByColor();
+      const rgb = hexToRGB(this.color);
+      this.colorChanged.emit([rgb.r, rgb.g, rgb.b, 255]);
+    } else {
       this.emitColor(this.selectedHeight);
-    }, 0);
+    }
+
+    this.drawHandle();
   }
 
   public ngAfterViewChecked() {
@@ -124,13 +129,22 @@ export class HueSliderComponent implements OnInit, AfterViewInit, AfterViewCheck
       if (event.pageY > (height)) {
         y = height;
       }
-
       this.selectedHeight = this.canvas.nativeElement.height - (height - y);
-
       this.draw();
       this.emitColor(this.selectedHeight);
-
       this.drawHandle();
     }
+  }
+
+  /**
+   * Function for getting position by hex-color
+   */
+  public getPositionByColor() {
+    const height = this.canvas.nativeElement.height;
+    const hsvMax = 360;
+
+    const rgbColor = hexToRGB(this.color);
+    const hsvColor = rgbToHSL(rgbColor.r, rgbColor.g, rgbColor.b);
+    this.selectedHeight = hsvColor.hue * height / hsvMax;
   }
 }
