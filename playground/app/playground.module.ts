@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FsExampleModule } from '@firestitch/example';
 
-import { FsColorPickerModule } from 'fs-package';
+import { FsColorPickerModule } from 'ngx-color-picker';
 
 import { AppMaterialModule } from './material.module';
 import {

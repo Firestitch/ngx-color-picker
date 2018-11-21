@@ -1,31 +1,31 @@
 :host {
   display: inline-block;
-}
 
-::ng-deep {
-  .mat-tab-label {
-    min-width: 0;
-    width: 50%;
-    color: #fff;
-  }
-
-  mat-tab-group {
-    .color {
-      padding: 15px;
-      text-align: center;
+  ::ng-deep {
+    .mat-tab-label {
+      min-width: 0;
+      width: 50%;
       color: #fff;
-      font-size: 20px;
     }
-  }
 
-  .mat-tab-group-inverted-header .mat-tab-nav-bar,
-  .mat-tab-group-inverted-header .mat-tab-header {
-    border: none;
-  }
+    mat-tab-group {
+      .color {
+        padding: 15px;
+        text-align: center;
+        color: #fff;
+        font-size: 20px;
+      }
+    }
 
-  .mat-tab-group.mat-primary .mat-ink-bar,
-  .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-    background: #fff;
+    .mat-tab-group-inverted-header .mat-tab-nav-bar,
+    .mat-tab-group-inverted-header .mat-tab-header {
+      border: none;
+    }
+
+    .mat-tab-group.mat-primary .mat-ink-bar,
+    .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+      background: #fff;
+    }
   }
 }
 
@@ -44,6 +44,6 @@
   padding: 0 7px 7px 7px;
 
   button {
-    margin-right: 7px;
+    width: 50%;
   }
 }
