@@ -1,18 +1,19 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {
+  MatButtonModule,
+  MatDialogModule,
+  MatIconModule,
+  MatSliderModule,
+  MatTabsModule
+} from '@angular/material';
+import { FormsModule } from '@angular/forms';
+import { FsClearModule } from '@firestitch/clear';
 
 import { ColorPaletteComponent } from './components/color-palette/color-palette.component';
 import { FsColorPickerComponent } from './components/color-picker/color-picker.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { HueSliderComponent } from './components/hue-slider/hue-slider.component';
-
-import {  MatTabsModule,
-          MatSliderModule,
-          MatDialogModule,
-          MatIconModule,
-          MatButtonModule } from '@angular/material';
-import { FsClearModule } from '@firestitch/clear';
-import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -41,9 +42,9 @@ import { FormsModule } from '@angular/forms';
   ]
 })
 export class FsColorPickerModule {
-  static forRoot(): ModuleWithProviders {
+  /*static forRoot(): ModuleWithProviders {
     return {
       ngModule: FsColorPickerModule
     };
-  }
+  }*/
 }

@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { rgbToHEX } from '../../helpers';
+import { rgbToHEX } from '../../helpers/color-helper';
 
 
 @Component({

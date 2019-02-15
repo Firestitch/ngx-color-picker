@@ -5,13 +5,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FsExampleModule } from '@firestitch/example';
+import { FsColorPickerModule } from '@firestitch/colorpicker';
 
-import { FsColorPickerModule } from 'ngx-color-picker';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AppMaterialModule } from './material.module';
-import {
-ExampleComponent,
-ExamplesComponent } from './components';
+import { ExampleComponent, ExamplesComponent } from './components';
 import { AppComponent } from './app.component';
 
 
@@ -20,7 +19,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     FsColorPickerModule,
@@ -28,17 +27,16 @@ const routes: Routes = [
     AppMaterialModule,
     FormsModule,
     FsExampleModule.forRoot(),
+    ToastrModule.forRoot({ preventDuplicates: true }),
     RouterModule.forRoot(routes),
   ],
-  entryComponents: [
-  ],
+  entryComponents: [],
   declarations: [
     AppComponent,
     ExamplesComponent,
     ExampleComponent
   ],
-  providers: [
-  ],
+  providers: [],
 })
 export class PlaygroundModule {
 }
