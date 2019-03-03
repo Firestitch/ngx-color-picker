@@ -1,11 +1,12 @@
-import { HostListener, Input, Output, EventEmitter, Component, ElementRef, AfterViewInit } from '@angular/core';
+import {  HostListener, Input, Output, EventEmitter, Component,
+          ElementRef, AfterViewInit, HostBinding, Renderer2 } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: '[fsColorPicker]',
   templateUrl: 'color-picker.component.html',
-  styleUrls: ['color-picker.component.css']
+  styleUrls: ['color-picker.component.scss']
 })
 
 export class FsColorPickerComponent implements AfterViewInit {
@@ -15,19 +16,27 @@ export class FsColorPickerComponent implements AfterViewInit {
   public icon = 'settings';
 
   constructor(private _dialog: MatDialog,
-              private el: ElementRef) {}
+              private el: ElementRef,
+              private renderer2: Renderer2) {}
+
+  @HostBinding('attr.tabindex') tabindex = '-1';
+  @HostBinding('attr.autocomplete') autocomplete = 'off';
 
   @HostListener('click', ['$event'])
   public inputClick($event: Event) {
     if (!this.ngModel) {
       $event.preventDefault();
       $event.stopPropagation();
+      $event.stopImmediatePropagation();
     }
     this.openDialog();
   }
 
   public ngAfterViewInit() {
-    this.el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', this.el.nativeElement.querySelector('.fs-color-picker-preview-wrapper'));
+
+    this.renderer2.setAttribute(this.el.nativeElement, 'readonly', 'readonly');
+    const wrapper = this.el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
+    this.el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', wrapper);
   }
 
   public clear() {
