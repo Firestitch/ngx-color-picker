@@ -4,4 +4,11 @@
 
 :host {
   height: 255px;
+  position: relative;
+}
+
+.handle-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
 }

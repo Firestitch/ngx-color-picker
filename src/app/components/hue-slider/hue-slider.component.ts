@@ -7,47 +7,49 @@ import {
   HostListener,
   EventEmitter,
   Input,
-  OnInit,
-  AfterViewChecked
+  SimpleChanges,
+  OnChanges,
+  OnInit
 } from '@angular/core';
 
-import { hexToRGB, rgbToHSL } from '../../helpers/color-helper';
+import { rgbToHSL, hslToRgb } from '../../helpers/color-helper';
+import { RGBA } from 'src/app/interfaces/rgba';
 
 @Component({
   selector: 'cp-hue-slider',
   templateUrl: './hue-slider.component.html',
   styleUrls: ['./hue-slider.component.css']
 })
-export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
-  @Input() selectedHeight: number;
-  @Input() color: string;
+export class HueSliderComponent implements AfterViewInit, OnChanges {
+  @Input() color: RGBA;
+  //@Input() brightness = 100;
   @Output() colorChanged: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('handle') handle: ElementRef<HTMLCanvasElement>;
 
+  private selectedHeight: number;
   private rect: ClientRect;
   private ctx: CanvasRenderingContext2D;
-
+  private canvasHandle: CanvasRenderingContext2D;
+  private hsvMax = 360;
   private mousedown = false;
 
   constructor() {}
 
   public ngAfterViewInit() {
     this.draw();
-
-    // if color is selected
-    if (this.color) {
-      this.getPositionByColor();
-      const rgb = hexToRGB(this.color);
-      this.colorChanged.emit([rgb.r, rgb.g, rgb.b, 255]);
-    } else {
-      this.emitColor(this.selectedHeight);
-    }
-
-    this.drawHandle();
   }
 
-  public ngAfterViewChecked() {
+  public ngOnChanges(changes: SimpleChanges) {
+
+    if (changes.color) {
+      //const hsl = rgbToHSL(this.color.r, this.color.g, this.color.b);
+      //this.brightness = hsl.l;
+    }
+
+    this.getPositionByColor();
+    this.drawHandle();
   }
 
   @HostListener('window:mouseup', ['$event'])
@@ -61,9 +63,9 @@ export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
   }
 
   public draw() {
-    if (!this.ctx) {
-      this.ctx = this.canvas.nativeElement.getContext('2d');
-    }
+
+    this.ctx = this.canvas.nativeElement.getContext('2d');
+
     const width = this.canvas.nativeElement.width;
     const height = this.canvas.nativeElement.height;
 
@@ -87,12 +89,18 @@ export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
   }
 
   public drawHandle() {
-    this.ctx.beginPath();
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-    this.ctx.lineWidth = 3;
-    this.ctx.rect(0, this.selectedHeight - 3, this.canvas.nativeElement.width, 5);
-    this.ctx.stroke();
-    this.ctx.closePath();
+
+    this.canvasHandle = this.handle.nativeElement.getContext('2d');
+    const width = this.handle.nativeElement.width;
+    const height = this.handle.nativeElement.height;
+
+    this.canvasHandle.clearRect(0, 0, width, height);
+    this.canvasHandle.beginPath();
+    this.canvasHandle.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+    this.canvasHandle.lineWidth = 3;
+    this.canvasHandle.rect(0, this.selectedHeight - 3, this.canvas.nativeElement.width, 5);
+    this.canvasHandle.stroke();
+    this.canvasHandle.closePath();
   }
 
   public canvasMouseDown(evt: MouseEvent) {
@@ -107,7 +115,9 @@ export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
   }
 
   public getColorAtPosition(y: number) {
-    return this.ctx.getImageData(15, y, 1, 1).data;
+    const hsl = rgbToHSL(this.color.r, this.color.g, this.color.b);
+    hsl.h = (y / 255) * 100;
+    return hslToRgb(hsl.h / 100, hsl.s / 100, hsl.l / 100);
   }
 
   private mouseMove(event: MouseEvent) {
@@ -129,8 +139,8 @@ export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
       if (event.pageY > (height)) {
         y = height;
       }
+
       this.selectedHeight = this.canvas.nativeElement.height - (height - y);
-      this.draw();
       this.emitColor(this.selectedHeight);
       this.drawHandle();
     }
@@ -141,10 +151,7 @@ export class HueSliderComponent implements AfterViewInit, AfterViewChecked {
    */
   public getPositionByColor() {
     const height = this.canvas.nativeElement.height;
-    const hsvMax = 360;
-
-    const rgbColor = hexToRGB(this.color);
-    const hsvColor = rgbToHSL(rgbColor.r, rgbColor.g, rgbColor.b);
-    this.selectedHeight = hsvColor.hue * height / hsvMax;
+    const hsvColor = rgbToHSL(this.color.r, this.color.g, this.color.b);
+    this.selectedHeight = hsvColor.h * height / this.hsvMax;
   }
 }

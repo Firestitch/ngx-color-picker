@@ -1,19 +1,25 @@
 :host {
   display: inline-block;
 
+
+
   ::ng-deep {
     .mat-tab-label {
       min-width: 0;
       width: 50%;
-      color: #fff;
+      color: unset;
     }
 
     mat-tab-group {
-      .color {
+      input {
         padding: 15px;
         text-align: center;
-        color: #fff;
         font-size: 20px;
+        width: 100%;
+        border: none;
+        background: transparent;
+        box-sizing: border-box;
+        outline: none;
       }
     }
 
@@ -24,7 +30,7 @@
 
     .mat-tab-group.mat-primary .mat-ink-bar,
     .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-      background: #fff;
+      background: unset;
     }
   }
 }

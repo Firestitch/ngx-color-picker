@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 
 import { hexToRGB, rgbToHSV } from '../../helpers/color-helper';
+import { RGBA } from 'src/app/interfaces/rgba';
 
 @Component({
   selector: 'cp-color-palette',
@@ -20,8 +21,7 @@ import { hexToRGB, rgbToHSV } from '../../helpers/color-helper';
 })
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };
-  @Input() hue: Uint8ClampedArray;
-  @Input() color: string;
+  @Input() color: RGBA;
   @Output() colorChanged: EventEmitter<any> = new EventEmitter(true);
 
   @ViewChild('canvas') public canvas: ElementRef<HTMLCanvasElement>;
@@ -51,14 +51,14 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges) {
-    if (changes.hue) {
+
+    if (changes.color) {
       this.draw();
 
-      // if color is selected
       if (this.color) {
         this.getPositionByColor();
-        const rgb = hexToRGB(this.color);
-        this.colorChanged.emit([rgb.r, rgb.g, rgb.b, 255]);
+
+        this.colorChanged.emit(this.color);
       } else {
         const pos = this.selectedPosition;
         if (pos) {
@@ -71,6 +71,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   }
 
   public draw() {
+
     if (!this.ctx) {
       this.ctx = this.canvas.nativeElement.getContext('2d');
     }
@@ -78,7 +79,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     const width = this.canvas.nativeElement.width;
     const height = this.canvas.nativeElement.height;
 
-    this.ctx.fillStyle = this.getRgba(this.hue) || 'rgba(255,255,255,1)';
+    this.ctx.clearRect(0, 0, width, height);
+    this.ctx.fillStyle = this.getRgba(this.color) || 'rgba(255,255,255,1)';
     this.ctx.fillRect(0, 0, width, height);
 
     const whiteGrad = this.ctx.createLinearGradient(0, 0, width, 0);
@@ -118,14 +120,16 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   }
 
   public getColorAtPosition(x: number, y: number) {
-    return this.ctx.getImageData(x, y, 1, 1).data;
+    const data = this.ctx.getImageData(x, y, 1, 1).data;
+    return { r: data[0], g: data[1], b: data[2] };
   }
 
-  public getRgba(data) {
-    if (!data) {
+  public getRgba(rgb) {
+    if (!rgb) {
       return '';
     }
-    return `rgb(${data[0]},${data[1]},${data[2]})`;
+
+    return `rgb(${rgb.r},${rgb.g},${rgb.b})`;
   }
 
   private mouseMove(event) {
@@ -178,8 +182,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     const width = +this.canvas.nativeElement.width;
 
     const max = 100;
-    const rgbColor = hexToRGB(this.color);
-    const hsvColor = rgbToHSV(rgbColor.r, rgbColor.g, rgbColor.b);
+    const hsvColor = rgbToHSV(this.color.r, this.color.g, this.color.b);
 
     const y = height - (hsvColor.value * height / max);
     const x = hsvColor.saturation * (width - 1) / max;
