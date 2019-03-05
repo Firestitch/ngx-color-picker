@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 
 import { rgbToHSL, hslToRgb } from '../../helpers/color-helper';
-import { RGBA } from 'src/app/interfaces/rgba';
+import { RGBA } from '../../interfaces/rgba';
 
 @Component({
   selector: 'cp-hue-slider',

@@ -11,8 +11,8 @@ import {
   HostListener
 } from '@angular/core';
 
-import { hexToRGB, rgbToHSV } from '../../helpers/color-helper';
-import { RGBA } from 'src/app/interfaces/rgba';
+import { rgbToHSV } from '../../helpers/color-helper';
+import { RGBA } from '../../interfaces/rgba';
 
 @Component({
   selector: 'cp-color-palette',

@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { rgbToHEX, hexToRGB, rgbToHSL } from '../../helpers/color-helper';
-import { RGBA } from 'src/app/interfaces/rgba';
+import { RGBA } from '../../interfaces/rgba';
 
 
 @Component({
@@ -23,7 +23,7 @@ export class DialogComponent implements OnInit {
 
   public ngOnInit() {
 
-    let color: RGBA = { r: 0, g: 0, b: 0 };
+    let color: RGBA = null;
 
     if (typeof this.data.color === 'string') {
       color = hexToRGB(this.data.color);
