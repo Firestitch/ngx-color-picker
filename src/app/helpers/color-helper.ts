@@ -1,8 +1,12 @@
-export function rgbToHEX(r: number, g: number, b: number) {
-  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+import { RGBA } from '../interfaces/rgba';
+import { HSL } from '../interfaces/hsl';
+import { round } from 'lodash-es';
+
+export function rgbToHex(rgb: RGBA): string {
+  return '#' + ((1 << 24) + (rgb.r << 16) + (rgb.g << 8) + rgb.b).toString(16).slice(1);
 }
 
-export function hexToRGB(hex: string) {
+export function hexToRgb(hex: string): RGBA {
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
@@ -12,80 +16,65 @@ export function hexToRGB(hex: string) {
   } : null;
 }
 
-export function rgbToHSL(r, g, b): { h, s, l} {
-  const red		= r / 255;
-  const green	= g / 255;
-  const blue	= b / 255;
+export function rgbToHsl(rgb: RGBA): HSL {
+    const r1 = rgb.r / 255;
+    const g1 = rgb.g / 255;
+    const b1 = rgb.b / 255;
 
-  const cmax = Math.max(red, green, blue);
-  const cmin = Math.min(red, green, blue);
-  const delta = cmax - cmin;
-  let hue = 0;
-  let saturation = 0;
-  let lightness = (cmax + cmin) / 2;
-  const X = (1 - Math.abs(2 * lightness - 1));
+    const maxColor = Math.max(r1, g1, b1);
+    const minColor = Math.min(r1, g1, b1);
 
-  if (delta) {
-    if (cmax === red ) { hue = ((green - blue) / delta); }
-    if (cmax === green ) { hue = 2 + (blue - red) / delta; }
-    if (cmax === blue ) { hue = 4 + (red - green) / delta; }
-    if (cmax) saturation = delta / X;
-  }
-
-  hue = +Number(60 * hue).toFixed(2);
-  if (hue < 0) hue += 360;
-  saturation = +Number(saturation * 100).toFixed(2);
-  lightness = +Number(lightness * 100).toFixed(2);
-
-  return { h: hue, s: saturation, l: lightness };
-}
-
-export function rgbToHSV(r, g, b) {
-  const red		= r / 255;
-  const green	= g / 255;
-  const blue	= b / 255;
-
-  const cmax = Math.max(red, green, blue);
-  const cmin = Math.min(red, green, blue);
-  const delta = cmax - cmin;
-  let hue = 0;
-  let saturation = 0;
-
-  if (delta) {
-    if (cmax === red ) { hue = ((green - blue) / delta); }
-    if (cmax === green ) { hue = 2 + (blue - red) / delta; }
-    if (cmax === blue ) { hue = 4 + (red - green) / delta; }
-    if (cmax) saturation = delta / cmax;
-  }
-
-  hue = +Number(hue * 60).toFixed(2);
-  if (hue < 0) hue += 360;
-  saturation =  +Number(saturation * 100).toFixed(2);
-  const value = +Number(cmax * 100).toFixed(2);
-  return { hue, saturation, value };
-}
-
-export function hslToRgb(h, s, l) {
-    var r, g, b;
-
-    if (s == 0) {
-        r = g = b = l; // achromatic
-    } else {
-        const hue2rgb = (p, q, t) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
+    let L = (maxColor + minColor) / 2 ;
+    let S = 0;
+    let H = 0;
+    if (maxColor != minColor) {
+        if (L < 0.5) {
+            S = (maxColor - minColor) / (maxColor + minColor);
+        } else {
+            S = (maxColor - minColor) / (2.0 - maxColor - minColor);
         }
 
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
+        if (r1 == maxColor) {
+            H = (g1 - b1) / (maxColor - minColor);
+        } else if (g1 == maxColor) {
+            H = 2.0 + (b1 - r1) / (maxColor - minColor);
+        } else {
+            H = 4.0 + (r1 - g1) / (maxColor - minColor);
+        }
     }
 
-    return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255), a: 255 };
+    L = L * 255;
+    S = S * 255;
+    H = H * 255;
+
+    return { h: H, s: S, l: L };
 }
+
+function hue2rgb(p, q, t) {
+  if (t < 0) t += 1;
+  if (t > 1) t -= 1;
+  if (t < 1 / 6) return p + (q - p) * 6 * t;
+  if (t < 1 / 2) return q;
+  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+  return p;
+}
+
+export function hslToRgb(hsl: HSL): RGBA {
+    var r, g, b;
+    const h = hsl.h / 255;
+    const s = hsl.s / 255;
+    const l = hsl.l / 255;
+    if (s == 0) {
+      r = g = b = l; // achromatic
+    } else {
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return { r: round(r * 255), g: round(g * 255), b: round(b * 255) };
+  }
+

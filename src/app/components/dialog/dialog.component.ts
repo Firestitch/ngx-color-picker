@@ -1,7 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { rgbToHEX, hexToRGB, rgbToHSL } from '../../helpers/color-helper';
+import { rgbToHex, hexToRgb, rgbToHsl, hslToRgb } from '../../helpers/color-helper';
 import { RGBA } from '../../interfaces/rgba';
+import { HSL } from '../../interfaces/hsl';
 
 
 @Component({
@@ -10,35 +11,37 @@ import { RGBA } from '../../interfaces/rgba';
   styleUrls: ['./dialog.component.scss']
 })
 export class DialogComponent implements OnInit {
-  public paletteColor = null;
-  public sliderColor = null;
+  public paletteHsl = null;
+  public sliderHsl = null;
   public colorHex = '';
   public colorRgb = '';
   public contrastColor = '';
-  public brightness = 100;
-  public color: RGBA;
+  public hsl: HSL;
 
   constructor(public dialogRef: MatDialogRef<DialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data) {}
 
   public ngOnInit() {
 
-    let color: RGBA = null;
+    let hsl: HSL = null;
 
     if (typeof this.data.color === 'string') {
-      color = hexToRGB(this.data.color);
+
+      const rgb: RGBA = hexToRgb(this.data.color);
+      if (rgb) {
+        hsl = rgbToHsl(rgb);
+      }
     }
 
-    if (!color) {
-      color = { r: Math.floor(Math.random() * 256),
-                g: Math.floor(Math.random() * 256),
-                b: Math.floor(Math.random() * 256) };
+    if (!hsl) {
+      hsl = { h: Math.floor(Math.random() * 256),
+              l: Math.floor(Math.random() * 256),
+              s: Math.floor(Math.random() * 256) };
     }
 
-    this.colorChange(color);
-
-    this.sliderColor = color;
-    this.paletteColor = color;
+    this.setHsl(hsl);
+    this.sliderHsl = hsl;
+    this.paletteHsl = hsl;
   }
 
   public rgbChanged() {
@@ -46,29 +49,31 @@ export class DialogComponent implements OnInit {
   }
 
   public hexChanged() {
-    const rgb = hexToRGB(this.colorHex);
+    const rgb = hexToRgb(this.colorHex);
     if (rgb) {
-      this.paletteColor = rgb;
-      this.sliderColor = rgb;
-      this.colorChange(rgb);
+
+      const hsl = rgbToHsl(rgb);
+      this.setHsl(hsl);
     }
   }
 
-  public colorSliderChange(rgb) {
-    this.paletteColor = rgb;
-    this.colorChange(rgb);
+  public sliderChanged(hue) {
+
+    const hsl = this.hsl;
+    hsl.h = hue;
+    this.setHsl(hsl);
+    this.paletteHsl = Object.assign({}, hsl);
   }
 
-  public colorPaletteChange(rgb) {
-    const hsl = rgbToHSL(rgb.r, rgb.g, rgb. b);
-    this.brightness = hsl.l;
-
-    this.colorChange(rgb);
+  public paletteChanged(hsl) {
+    hsl.h = this.hsl.h;
+    this.setHsl(hsl);
   }
 
-  public colorChange(rgb) {
-    this.color = rgb;
-    this.colorHex = rgbToHEX(rgb.r, rgb.g, rgb.b);
+  public setHsl(hsl: HSL) {
+    this.hsl = hsl;
+    const rgb = hslToRgb(hsl);
+    this.colorHex = rgbToHex(rgb);
     this.colorRgb = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
     this.contrastColor = this.isContrastYIQDark(rgb) ? '#474747' : '#fff';
   }
@@ -79,6 +84,8 @@ export class DialogComponent implements OnInit {
   }
 
   public select() {
-    this.dialogRef.close(rgbToHEX(this.color.r, this.color.g, this.color.b));
+    const rgb = hslToRgb(this.hsl)
+    const hex = rgbToHex(rgb);
+    this.dialogRef.close(hex);
   }
 }

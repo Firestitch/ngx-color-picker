@@ -1,5 +1,11 @@
-<canvas #canvas
+<canvas #palette
         class="color-palette"
+        width="255"
+        height="255">
+</canvas>
+
+<canvas #handle
+        class="handle"
         width="255"
         height="255"
         (mousedown)="canvasMouseDown($event)">

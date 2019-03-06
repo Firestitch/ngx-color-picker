@@ -8,12 +8,10 @@ import {
   EventEmitter,
   Input,
   SimpleChanges,
-  OnChanges,
-  OnInit
+  OnChanges
 } from '@angular/core';
 
-import { rgbToHSL, hslToRgb } from '../../helpers/color-helper';
-import { RGBA } from '../../interfaces/rgba';
+import { HSL } from '../../interfaces/hsl';
 
 @Component({
   selector: 'cp-hue-slider',
@@ -21,9 +19,9 @@ import { RGBA } from '../../interfaces/rgba';
   styleUrls: ['./hue-slider.component.css']
 })
 export class HueSliderComponent implements AfterViewInit, OnChanges {
-  @Input() color: RGBA;
+  @Input() hsl: HSL;
   //@Input() brightness = 100;
-  @Output() colorChanged: EventEmitter<any> = new EventEmitter();
+  @Output() changed: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('handle') handle: ElementRef<HTMLCanvasElement>;
@@ -32,7 +30,6 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
   private rect: ClientRect;
   private ctx: CanvasRenderingContext2D;
   private canvasHandle: CanvasRenderingContext2D;
-  private hsvMax = 360;
   private mousedown = false;
 
   constructor() {}
@@ -42,13 +39,7 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges) {
-
-    if (changes.color) {
-      //const hsl = rgbToHSL(this.color.r, this.color.g, this.color.b);
-      //this.brightness = hsl.l;
-    }
-
-    this.getPositionByColor();
+    this.selectedHeight = this.hsl.h;
     this.drawHandle();
   }
 
@@ -109,17 +100,6 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
     this.onMouseMove(evt);
   }
 
-  public emitColor(y: number) {
-    const rgbaColor = this.getColorAtPosition(y);
-    this.colorChanged.emit(rgbaColor);
-  }
-
-  public getColorAtPosition(y: number) {
-    const hsl = rgbToHSL(this.color.r, this.color.g, this.color.b);
-    hsl.h = (y / 255) * 100;
-    return hslToRgb(hsl.h / 100, hsl.s / 100, hsl.l / 100);
-  }
-
   private mouseMove(event: MouseEvent) {
     if (this.mousedown) {
 
@@ -141,17 +121,8 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
       }
 
       this.selectedHeight = this.canvas.nativeElement.height - (height - y);
-      this.emitColor(this.selectedHeight);
+      this.changed.emit(this.selectedHeight);
       this.drawHandle();
     }
-  }
-
-  /**
-   * Function for getting position by hex-color
-   */
-  public getPositionByColor() {
-    const height = this.canvas.nativeElement.height;
-    const hsvColor = rgbToHSL(this.color.r, this.color.g, this.color.b);
-    this.selectedHeight = hsvColor.h * height / this.hsvMax;
   }
 }

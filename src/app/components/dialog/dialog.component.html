@@ -12,8 +12,8 @@
 </mat-tab-group>
 
 <div class=color-wrapper>
-  <cp-color-palette [color]="paletteColor" (colorChanged)="colorPaletteChange($event)"></cp-color-palette>
-  <cp-hue-slider [color]="sliderColor" (colorChanged)="colorSliderChange($event)"></cp-hue-slider>
+  <cp-color-palette [hsl]="paletteHsl" (changed)="paletteChanged($event)"></cp-color-palette>
+  <cp-hue-slider [hsl]="sliderHsl" (changed)="sliderChanged($event)"></cp-hue-slider>
 </div>
 
 <div class="buttons">

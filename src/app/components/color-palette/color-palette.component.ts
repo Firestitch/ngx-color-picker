@@ -11,7 +11,8 @@ import {
   HostListener
 } from '@angular/core';
 
-import { rgbToHSV } from '../../helpers/color-helper';
+import { hslToRgb } from '../../helpers/color-helper';
+import { HSL } from '../../interfaces/hsl';
 import { RGBA } from '../../interfaces/rgba';
 
 @Component({
@@ -21,19 +22,16 @@ import { RGBA } from '../../interfaces/rgba';
 })
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };
-  @Input() color: RGBA;
-  @Output() colorChanged: EventEmitter<any> = new EventEmitter(true);
+  @Input() hsl: HSL;
+  @Output() changed: EventEmitter<any> = new EventEmitter(true);
 
-  @ViewChild('canvas') public canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('handle') public handleCanvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('palette') public paletteCanvas: ElementRef<HTMLCanvasElement>;
 
   private rect: ClientRect;
-  private ctx: CanvasRenderingContext2D;
-
+  private palette: CanvasRenderingContext2D;
+  private handle: CanvasRenderingContext2D;
   private mousedown = false;
-
-  constructor() {
-
-  }
 
   @HostListener('window:mouseup', ['$event'])
   public onMouseUp(evt: MouseEvent) {
@@ -52,18 +50,11 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
   public ngOnChanges(changes: SimpleChanges) {
 
-    if (changes.color) {
+    if (changes.hsl) {
       this.draw();
 
-      if (this.color) {
-        this.getPositionByColor();
-
-        this.colorChanged.emit(this.color);
-      } else {
-        const pos = this.selectedPosition;
-        if (pos) {
-          this.colorChanged.emit(this.getColorAtPosition(pos.x, pos.y));
-        }
+      if (!this.selectedPosition) {
+        this.selectedPosition = { x: 0, y: 0 };
       }
 
       this.drawHandle();
@@ -72,64 +63,69 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
   public draw() {
 
-    if (!this.ctx) {
-      this.ctx = this.canvas.nativeElement.getContext('2d');
+    if (!this.palette) {
+      this.palette = this.paletteCanvas.nativeElement.getContext('2d');
     }
 
-    const width = this.canvas.nativeElement.width;
-    const height = this.canvas.nativeElement.height;
+    if (!this.handle) {
+      this.handle = this.handleCanvas.nativeElement.getContext('2d');
+    }
 
-    this.ctx.clearRect(0, 0, width, height);
-    this.ctx.fillStyle = this.getRgba(this.color) || 'rgba(255,255,255,1)';
-    this.ctx.fillRect(0, 0, width, height);
+    const width = this.paletteCanvas.nativeElement.width;
+    const height = this.paletteCanvas.nativeElement.height;
+    const hsl = Object.assign({}, this.hsl, { s: 255, l: 128 });
+    this.palette.clearRect(0, 0, width, height);
+    this.palette.fillStyle = this.getRgba(hsl) || 'rgba(255,255,255,1)';
+    this.palette.fillRect(0, 0, width, height);
 
-    const whiteGrad = this.ctx.createLinearGradient(0, 0, width, 0);
+    const whiteGrad = this.palette.createLinearGradient(0, 0, width, 0);
     whiteGrad.addColorStop(0, 'rgba(255,255,255,1)');
     whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
 
-    this.ctx.fillStyle = whiteGrad;
-    this.ctx.fillRect(0, 0, width, height);
+    this.palette.fillStyle = whiteGrad;
+    this.palette.fillRect(0, 0, width, height);
 
-    const blackGrad = this.ctx.createLinearGradient(0, 0, 0, height);
+    const blackGrad = this.palette.createLinearGradient(0, 0, 0, height);
     blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
     blackGrad.addColorStop(1, 'rgba(0,0,0,1)');
 
-    this.ctx.fillStyle = blackGrad;
-    this.ctx.fillRect(0, 0, width, height);
+    this.palette.fillStyle = blackGrad;
+    this.palette.fillRect(0, 0, width, height);
   }
 
   public drawHandle() {
     if (this.selectedPosition) {
-      this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-      this.ctx.beginPath();
-      this.ctx.arc(this.selectedPosition.x, this.selectedPosition.y, 10, 0, 2 * Math.PI);
-      this.ctx.lineWidth = 5;
-      this.ctx.stroke();
+
+      this.handle = this.handleCanvas.nativeElement.getContext('2d');
+      const width = this.handleCanvas.nativeElement.width;
+      const height = this.handleCanvas.nativeElement.height;
+
+      this.handle.clearRect(0, 0, width, height);
+      this.handle.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      this.handle.beginPath();
+      this.handle.arc(this.selectedPosition.x, this.selectedPosition.y, 10, 0, 2 * Math.PI);
+      this.handle.lineWidth = 5;
+      this.handle.stroke();
     }
   }
 
   public canvasMouseDown(evt: MouseEvent) {
     this.mousedown = true;
-    this.rect = this.canvas.nativeElement.getBoundingClientRect();
+    this.rect = this.paletteCanvas.nativeElement.getBoundingClientRect();
     this.onMouseMove(evt);
   }
 
-  public emitColor(x: number, y: number) {
-    const rgbaColor = this.getColorAtPosition(x, y);
-    this.colorChanged.emit(rgbaColor);
-  }
-
-  public getColorAtPosition(x: number, y: number) {
-    const data = this.ctx.getImageData(x, y, 1, 1).data;
+  public getRgbAtPosition(x: number, y: number): RGBA {
+    const data = this.palette.getImageData(x, y, 1, 1).data;
     return { r: data[0], g: data[1], b: data[2] };
   }
 
-  public getRgba(rgb) {
-    if (!rgb) {
+  public getRgba(hsl) {
+    if (!hsl) {
       return '';
     }
-
-    return `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+    const rgb = hslToRgb(hsl);
+    return `rgb(${rgb.r},${rgb.g},${rgb.b},1)`;
   }
 
   private mouseMove(event) {
@@ -141,8 +137,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
       const top = this.rect.top;
       const left = this.rect.left;
 
-      const height = top + this.canvas.nativeElement.height;
-      const width = left + this.canvas.nativeElement.width;
+      const height = top + this.paletteCanvas.nativeElement.height;
+      const width = left + this.paletteCanvas.nativeElement.width;
 
       let y = event.pageY;
       let x = event.pageX;
@@ -163,30 +159,23 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         x = width - 1;
       }
 
-      x = this.canvas.nativeElement.width - (width - x);
-      y = this.canvas.nativeElement.height - (height - y);
+      x = this.handleCanvas.nativeElement.width - (width - x);
+      y = this.handleCanvas.nativeElement.height - (height - y);
 
       this.selectedPosition = { x, y };
 
-      this.draw();
-      this.emitColor(x, y);
       this.drawHandle();
+      const hsl = this.hsl;
+
+      let s = x / 255;
+      const h = 1 - (y / 255);
+      const l = (h / 2) * (2 - s);
+      s = (h * s) / (1 - Math.abs(2 * l - 1));
+
+      hsl.s = (s * 255) || 0;
+      hsl.l = l * 255;
+
+      this.changed.emit(hsl);
     }
-  }
-
-  /**
-   * Function for getting position by hex-color
-   */
-  private getPositionByColor() {
-    const height = +this.canvas.nativeElement.height;
-    const width = +this.canvas.nativeElement.width;
-
-    const max = 100;
-    const hsvColor = rgbToHSV(this.color.r, this.color.g, this.color.b);
-
-    const y = height - (hsvColor.value * height / max);
-    const x = hsvColor.saturation * (width - 1) / max;
-
-    this.selectedPosition = { x, y };
   }
 }
