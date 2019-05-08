@@ -1,9 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { rgbToHex, hexToRgb, rgbToHsl, hslToRgb } from '../../helpers/color-helper';
-import { RGBA } from '../../interfaces/rgba';
-import { HSL } from '../../interfaces/hsl';
 
+import Color from 'color';
 
 @Component({
   selector: 'cp-dialog',
@@ -11,81 +9,72 @@ import { HSL } from '../../interfaces/hsl';
   styleUrls: ['./dialog.component.scss']
 })
 export class DialogComponent implements OnInit {
-  public paletteHsl = null;
-  public sliderHsl = null;
+  public paletteColor = null;
   public colorHex = '';
   public colorRgb = '';
   public contrastColor = '';
-  public hsl: HSL;
+  public color = Color();
 
   constructor(public dialogRef: MatDialogRef<DialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data) {}
 
   public ngOnInit() {
 
-    let hsl: HSL = null;
-
     if (typeof this.data.color === 'string') {
+      this.setColor(this.data.color);
+    } else {
 
-      const rgb: RGBA = hexToRgb(this.data.color);
-      if (rgb) {
-        hsl = rgbToHsl(rgb);
-      }
+
+      const color = Color().hsv();
+
+      color.color[0] = Math.floor(Math.random() * 360);
+      color.color[1] = Math.floor(Math.random() * (10) + 80);
+      color.color[2] = Math.floor(Math.random() * (10) + 80);
+
+      this.setColor(color);
     }
 
-    if (!hsl) {
-      hsl = { h: Math.floor(Math.random() * 256),
-              l: Math.floor(Math.random() * 256),
-              s: Math.floor(Math.random() * 256) };
-    }
+    this.paletteColor = this.color;
+  }
 
-    this.setHsl(hsl);
-    this.sliderHsl = hsl;
-    this.paletteHsl = hsl;
+  public setColor(color) {
+    this.color = Color(color);
+    this.colorHex = this.color.hex();
+    this.colorRgb = this.color.rgb().toString();
+    this.contrastColor = this.isContrastYIQDark(this.color.rgb()) ? '#474747' : '#fff';
   }
 
   public rgbChanged() {
-
-  }
-
-  public hexChanged() {
-    const rgb = hexToRgb(this.colorHex);
-    if (rgb) {
-
-      const hsl = rgbToHsl(rgb);
-      this.setHsl(hsl);
+    const match = this.colorRgb.match(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\s*\)/i);
+    if (match) {
+      this.setColor(this.colorRgb);
+      this.paletteColor = this.color;
     }
   }
 
-  public sliderChanged(hue) {
-
-    const hsl = this.hsl;
-    hsl.h = hue;
-    this.setHsl(hsl);
-    this.paletteHsl = Object.assign({}, hsl);
+  public hexChanged() {
+    const match = this.colorHex.match(/^#?[0-9A-Fa-f]{6}$/);
+    if (match) {
+      this.setColor(this.colorHex);
+      this.paletteColor = this.color;
+    }
   }
 
-  public paletteChanged(hsl) {
-    hsl.h = this.hsl.h;
-    this.setHsl(hsl);
+  public sliderChanged(color) {
+    this.setColor(color);
+    this.paletteColor = color;
   }
 
-  public setHsl(hsl: HSL) {
-    this.hsl = hsl;
-    const rgb = hslToRgb(hsl);
-    this.colorHex = rgbToHex(rgb);
-    this.colorRgb = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-    this.contrastColor = this.isContrastYIQDark(rgb) ? '#474747' : '#fff';
+  public paletteChanged(color) {
+    this.setColor(color);
   }
 
   private isContrastYIQDark(rgb) {
-    const yiq = ((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000;
+    const yiq = ((rgb.red() * 299) + (rgb.green() * 587) + (rgb.blue() * 114)) / 1000;
     return yiq >= 180;
   }
 
   public select() {
-    const rgb = hslToRgb(this.hsl)
-    const hex = rgbToHex(rgb);
-    this.dialogRef.close(hex);
+    this.dialogRef.close(this.color.hex().toString());
   }
 }

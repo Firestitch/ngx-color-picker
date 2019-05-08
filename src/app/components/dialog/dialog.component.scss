@@ -8,6 +8,11 @@
       min-width: 0;
       width: 50%;
       color: unset;
+      opacity: .25;
+
+      &.mat-tab-label-active {
+        opacity: 1;
+      }
     }
 
     mat-tab-group {

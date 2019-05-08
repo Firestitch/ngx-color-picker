@@ -11,9 +11,7 @@ import {
   HostListener
 } from '@angular/core';
 
-import { hslToRgb } from '../../helpers/color-helper';
-import { HSL } from '../../interfaces/hsl';
-import { RGBA } from '../../interfaces/rgba';
+import Color from 'color';
 
 @Component({
   selector: 'cp-color-palette',
@@ -22,14 +20,14 @@ import { RGBA } from '../../interfaces/rgba';
 })
 export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };
-  @Input() hsl: HSL;
+  @Input() color: Color;
   @Output() changed: EventEmitter<any> = new EventEmitter(true);
 
   @ViewChild('handle') public handleCanvas: ElementRef<HTMLCanvasElement>;
-  @ViewChild('palette') public paletteCanvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('colorLayer') public colorLayer: ElementRef;
 
+  public colorStyle: any = {};
   private rect: ClientRect;
-  private palette: CanvasRenderingContext2D;
   private handle: CanvasRenderingContext2D;
   private mousedown = false;
 
@@ -44,53 +42,28 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
   }
 
   public ngAfterViewInit() {
-    this.draw();
     this.drawHandle();
   }
 
   public ngOnChanges(changes: SimpleChanges) {
 
-    if (changes.hsl) {
-      this.draw();
+    if (changes.color) {
 
       if (!this.selectedPosition) {
         this.selectedPosition = { x: 0, y: 0 };
       }
 
+      const hsv = this.color.hsv();
+      this.selectedPosition = { x: (hsv.color[1] / 100) * 255, y: 255 - ((hsv.color[2] / 100) * 255) };
+
+      const background = Color(this.color).hsv();
+      background.color[1] = 100;
+      background.color[2] = 100;
+
+      this.colorStyle.background = background.hex();
+
       this.drawHandle();
     }
-  }
-
-  public draw() {
-
-    if (!this.palette) {
-      this.palette = this.paletteCanvas.nativeElement.getContext('2d');
-    }
-
-    if (!this.handle) {
-      this.handle = this.handleCanvas.nativeElement.getContext('2d');
-    }
-
-    const width = this.paletteCanvas.nativeElement.width;
-    const height = this.paletteCanvas.nativeElement.height;
-    const hsl = Object.assign({}, this.hsl, { s: 255, l: 128 });
-    this.palette.clearRect(0, 0, width, height);
-    this.palette.fillStyle = this.getRgba(hsl) || 'rgba(255,255,255,1)';
-    this.palette.fillRect(0, 0, width, height);
-
-    const whiteGrad = this.palette.createLinearGradient(0, 0, width, 0);
-    whiteGrad.addColorStop(0, 'rgba(255,255,255,1)');
-    whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
-
-    this.palette.fillStyle = whiteGrad;
-    this.palette.fillRect(0, 0, width, height);
-
-    const blackGrad = this.palette.createLinearGradient(0, 0, 0, height);
-    blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    blackGrad.addColorStop(1, 'rgba(0,0,0,1)');
-
-    this.palette.fillStyle = blackGrad;
-    this.palette.fillRect(0, 0, width, height);
   }
 
   public drawHandle() {
@@ -111,21 +84,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
   public canvasMouseDown(evt: MouseEvent) {
     this.mousedown = true;
-    this.rect = this.paletteCanvas.nativeElement.getBoundingClientRect();
+    this.rect = this.colorLayer.nativeElement.getBoundingClientRect();
     this.onMouseMove(evt);
-  }
-
-  public getRgbAtPosition(x: number, y: number): RGBA {
-    const data = this.palette.getImageData(x, y, 1, 1).data;
-    return { r: data[0], g: data[1], b: data[2] };
-  }
-
-  public getRgba(hsl) {
-    if (!hsl) {
-      return '';
-    }
-    const rgb = hslToRgb(hsl);
-    return `rgb(${rgb.r},${rgb.g},${rgb.b},1)`;
   }
 
   private mouseMove(event) {
@@ -137,8 +97,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
       const top = this.rect.top;
       const left = this.rect.left;
 
-      const height = top + this.paletteCanvas.nativeElement.height;
-      const width = left + this.paletteCanvas.nativeElement.width;
+      const height = top + this.colorLayer.nativeElement.clientHeight;
+      const width = left + this.colorLayer.nativeElement.clientWidth;
 
       let y = event.pageY;
       let x = event.pageX;
@@ -165,17 +125,19 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
       this.selectedPosition = { x, y };
 
       this.drawHandle();
-      const hsl = this.hsl;
+
+      const hsl = this.color.hsl();
 
       let s = x / 255;
       const h = 1 - (y / 255);
       const l = (h / 2) * (2 - s);
       s = (h * s) / (1 - Math.abs(2 * l - 1));
 
-      hsl.s = (s * 255) || 0;
-      hsl.l = l * 255;
+      hsl.color[1] = (s * 100) || 0;
+      hsl.color[2] = l * 100;
 
-      this.changed.emit(hsl);
+      this.color = hsl;
+      this.changed.emit(this.color);
     }
   }
 }

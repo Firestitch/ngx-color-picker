@@ -2,7 +2,7 @@
   "name": "@firestitch/colorpicker",
   "title": "Color Picker",
   "description": "@firestitch/colorpicker",
-  "version": "7.0.4",
+  "version": "7.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Firestitch/ngx-color-picker"
@@ -60,13 +60,15 @@
     "typescript": "^3.1.6",
     "webpack": "^4.29.1",
     "webpack-dev-server": "^3.1.14",
-    "zone.js": "^0.8.29"
+    "zone.js": "^0.8.29",
+    "color": "^3.1.1",
+    "@firestitch/clear": "^7.1.0"
   },
   "engines": {
     "node": ">=6.0.0"
   },
-  "peerDependencies": {},
-  "dependencies": {
-    "@firestitch/clear": "^0.2.0"
+  "peerDependencies": {
+    "@firestitch/clear": ">=7.1.0",
+    "color": ">=3.0.0"
   }
 }

@@ -15,3 +15,21 @@
   top: 0;
   left: 0;
 }
+
+.black,
+.white,
+.color {
+  width: 255px;
+  height: 255px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.black {
+  background: linear-gradient(to top, #000, rgba(0,0,0,0));
+}
+
+.white {
+  background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+}

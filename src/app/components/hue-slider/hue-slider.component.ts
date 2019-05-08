@@ -10,7 +10,7 @@ import {
   SimpleChanges,
   OnChanges
 } from '@angular/core';
-
+import Color from 'color';
 import { HSL } from '../../interfaces/hsl';
 
 @Component({
@@ -19,8 +19,7 @@ import { HSL } from '../../interfaces/hsl';
   styleUrls: ['./hue-slider.component.css']
 })
 export class HueSliderComponent implements AfterViewInit, OnChanges {
-  @Input() hsl: HSL;
-  //@Input() brightness = 100;
+  @Input() color: Color;
   @Output() changed: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
@@ -39,7 +38,7 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges) {
-    this.selectedHeight = this.hsl.h;
+    this.selectedHeight = (this.color.hsl().hue() / 360) * 255;
     this.drawHandle();
   }
 
@@ -121,7 +120,10 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
       }
 
       this.selectedHeight = this.canvas.nativeElement.height - (height - y);
-      this.changed.emit(this.selectedHeight);
+
+      const color = this.color.hsl();
+      color.color[0] = (this.selectedHeight / 255 ) * 360;
+      this.changed.emit(color);
       this.drawHandle();
     }
   }

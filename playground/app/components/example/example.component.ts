@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 export class ExampleComponent {
 
   // public color = null;
-  public color;
+  public color = '#99f101';
 
 }
