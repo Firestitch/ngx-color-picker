@@ -2,28 +2,27 @@ import {
   Component,
   ViewChild,
   ElementRef,
-  AfterViewInit,
   Output,
   HostListener,
   EventEmitter,
   Input,
   SimpleChanges,
-  OnChanges
+  OnChanges, OnInit, ChangeDetectionStrategy
 } from '@angular/core';
 import Color from 'color';
-import { HSL } from '../../interfaces/hsl';
 
 @Component({
   selector: 'cp-hue-slider',
   templateUrl: './hue-slider.component.html',
-  styleUrls: ['./hue-slider.component.css']
+  styleUrls: ['./hue-slider.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HueSliderComponent implements AfterViewInit, OnChanges {
+export class HueSliderComponent implements OnInit, OnChanges {
   @Input() color: Color;
   @Output() changed: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild('canvas') canvas: ElementRef<HTMLCanvasElement>;
-  @ViewChild('handle') handle: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvas', { static: true }) canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('handle', { static: true }) handle: ElementRef<HTMLCanvasElement>;
 
   private selectedHeight: number;
   private rect: ClientRect;
@@ -33,7 +32,7 @@ export class HueSliderComponent implements AfterViewInit, OnChanges {
 
   constructor() {}
 
-  public ngAfterViewInit() {
+  public ngOnInit() {
     this.draw();
   }
 

@@ -1,12 +1,13 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import Color from 'color';
 
 @Component({
   selector: 'cp-dialog',
   templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.scss']
+  styleUrls: ['./dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent implements OnInit {
   public paletteColor = null;
@@ -16,7 +17,8 @@ export class DialogComponent implements OnInit {
   public color = Color();
 
   constructor(public dialogRef: MatDialogRef<DialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data) {}
+              @Inject(MAT_DIALOG_DATA) public data) {
+  }
 
   public ngOnInit() {
 

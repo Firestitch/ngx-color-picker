@@ -2,13 +2,13 @@ import {
   Component,
   ViewChild,
   ElementRef,
-  AfterViewInit,
   Input,
   Output,
   SimpleChanges,
   OnChanges,
   EventEmitter,
-  HostListener
+  HostListener,
+  OnInit, ChangeDetectionStrategy
 } from '@angular/core';
 
 import Color from 'color';
@@ -16,15 +16,16 @@ import Color from 'color';
 @Component({
   selector: 'cp-color-palette',
   templateUrl: './color-palette.component.html',
-  styleUrls: ['./color-palette.component.css']
+  styleUrls: ['./color-palette.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColorPaletteComponent implements AfterViewInit, OnChanges {
+export class ColorPaletteComponent implements OnInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };
   @Input() color: Color;
   @Output() changed: EventEmitter<any> = new EventEmitter(true);
 
-  @ViewChild('handle') public handleCanvas: ElementRef<HTMLCanvasElement>;
-  @ViewChild('colorLayer') public colorLayer: ElementRef;
+  @ViewChild('handle', { static: true }) public handleCanvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('colorLayer', { static: true }) public colorLayer: ElementRef;
 
   public colorStyle: any = {};
   private rect: ClientRect;
@@ -41,7 +42,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
    this.mouseMove(evt);
   }
 
-  public ngAfterViewInit() {
+  public ngOnInit() {
     this.drawHandle();
   }
 

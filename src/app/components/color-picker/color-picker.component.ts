@@ -1,15 +1,26 @@
-import {  HostListener, Input, Output, EventEmitter, Component,
-          ElementRef, AfterViewInit, HostBinding, Renderer2 } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import {
+  AfterViewInit, ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  Output,
+  Renderer2
+} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: '[fsColorPicker]',
   templateUrl: 'color-picker.component.html',
-  styleUrls: ['color-picker.component.scss']
+  styleUrls: ['color-picker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class FsColorPickerComponent implements AfterViewInit {
+
   @Input() public ngModel: string | null = null;
   @Output() public ngModelChange = new EventEmitter<string>();
 
@@ -17,7 +28,8 @@ export class FsColorPickerComponent implements AfterViewInit {
 
   constructor(private _dialog: MatDialog,
               private el: ElementRef,
-              private renderer2: Renderer2) {}
+              private renderer2: Renderer2) {
+  }
 
   @HostBinding('attr.tabindex') tabindex = '-1';
   @HostBinding('attr.autocomplete') autocomplete = 'off';
