@@ -1,16 +1,23 @@
 import {
-  AfterViewInit, ChangeDetectionStrategy,
+  AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
-  ElementRef,
-  EventEmitter,
+  ElementRef, EventEmitter,
   HostBinding,
   HostListener,
   Input,
-  Output,
+  OnDestroy,
+  OnInit,
+  Optional, Output,
   Renderer2
 } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 import { DialogComponent } from '../dialog/dialog.component';
+
 
 @Component({
   selector: '[fsColorPicker]',
@@ -19,24 +26,54 @@ import { DialogComponent } from '../dialog/dialog.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class FsColorPickerComponent implements AfterViewInit {
+export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() public ngModel: string | null = null;
-  @Output() public ngModelChange = new EventEmitter<string>();
+  @Input()
+  public showClear = true;
 
-  public icon = 'settings';
+  @Input()
+  public set value(value: string) {
+    this._value = value;
 
-  constructor(private _dialog: MatDialog,
-              private el: ElementRef,
-              private renderer2: Renderer2) {
+    if (this._ngControl) {
+      this._ngControl.control.setValue(value);
+    }
   }
 
-  @HostBinding('attr.tabindex') tabindex = '-1';
-  @HostBinding('attr.autocomplete') autocomplete = 'off';
+  @HostBinding('attr.tabindex')
+  public tabindex = '-1';
+
+  @HostBinding('attr.autocomplete')
+  public autocomplete = 'off';
+
+  private _isDisabled = false;
+  private _value: string = void 0;
+  private _destroy$ = new Subject<void>();
+
+  constructor(
+    @Optional() private _ngControl: NgControl,
+    private _dialog: MatDialog,
+    private _el: ElementRef,
+    private _renderer2: Renderer2,
+    private _cdRef: ChangeDetectorRef,
+  ) {}
+
+  public get value() {
+    return this._value;
+  }
+
+  public get isDisabled() {
+    return this._isDisabled;
+  }
 
   @HostListener('click', ['$event'])
   public inputClick($event: Event) {
-    if (!this.ngModel) {
+    // To prevent open dialog if used in preview mode or disabled
+    if (!this._ngControl || this._isDisabled) {
+      return
+    }
+
+    if (!this.value) {
       $event.preventDefault();
       $event.stopPropagation();
       $event.stopImmediatePropagation();
@@ -44,27 +81,66 @@ export class FsColorPickerComponent implements AfterViewInit {
     this.openDialog();
   }
 
-  public ngAfterViewInit() {
+  public ngOnInit() {
+    this._listenValueChanges();
 
-    this.renderer2.setAttribute(this.el.nativeElement, 'readonly', 'readonly');
-    const wrapper = this.el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
-    this.el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', wrapper);
+    // If in preview mode
+    if (!this._ngControl) {
+      this.showClear = false;
+      this._isDisabled = true;
+    }
+  }
+
+  public ngAfterViewInit() {
+    if (this._ngControl) {
+      this._renderer2.setAttribute(this._el.nativeElement, 'readonly', 'readonly');
+      const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
+      this._el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', wrapper);
+    }
+  }
+
+  public ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   public clear() {
-    this.ngModelChange.emit(null);
+    this.value = null;
   }
 
   public openDialog() {
+    if (this._isDisabled) {
+      return;
+    }
+
     const dialogRef = this._dialog.open(DialogComponent, {
-      data: { color: this.ngModel },
+      data: { color: this.value },
       panelClass: 'fs-color-picker-dialog-container'
     });
 
-    dialogRef.afterClosed().subscribe((result: string | null) => {
-      if (result) {
-        this.ngModelChange.emit(result);
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._destroy$),
+      )
+      .subscribe((result: string | null) => {
+        if (result) {
+          this.value = result;
+          this._cdRef.detectChanges();
+        }
+      });
+  }
+
+  private _listenValueChanges() {
+    if (this._ngControl) {
+      this._ngControl.valueChanges
+        .pipe(
+          takeUntil(this._destroy$),
+        )
+        .subscribe((value) => {
+          this._value = value;
+
+          this._cdRef.detectChanges();
+        });
+    }
   }
 }

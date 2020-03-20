@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FsExampleModule } from '@firestitch/example';
 import { FsColorPickerModule } from '@firestitch/colorpicker';
+import { FsLabelModule } from '@firestitch/label';
 
 import { ToastrModule } from 'ngx-toastr';
 
@@ -26,6 +27,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     AppMaterialModule,
     FormsModule,
+    FsLabelModule,
     FsExampleModule.forRoot(),
     ToastrModule.forRoot({ preventDuplicates: true }),
     RouterModule.forRoot(routes),

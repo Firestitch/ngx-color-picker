@@ -2,7 +2,7 @@
   "name": "@firestitch/colorpicker",
   "title": "Color Picker",
   "description": "@firestitch/colorpicker",
-  "version": "8.0.1",
+  "version": "8.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Firestitch/ngx-color-picker"
@@ -49,6 +49,7 @@
     "@firestitch/drawer": "^8.0.2",
     "@firestitch/example": "^8.0.0",
     "@firestitch/iframe": "^8.0.0",
+    "@firestitch/label": "^8.1.0",
     "@firestitch/menu": "^7.0.11",
     "@firestitch/message": "^8.1.0",
     "codelyzer": "^5.2.1",

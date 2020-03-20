@@ -1,5 +1,5 @@
-<span class="fs-color-picker-preview-wrapper" [ngClass]="{ selected: ngModel }">
-  <div class="preview" [ngStyle]="{ background: ngModel }" (click)="openDialog()"></div>
-</span>
+<div class="fs-color-picker-preview-wrapper" [ngClass]="{ selected: value, disabled: isDisabled }">
+  <div class="preview" [ngStyle]="{ background: value }" (click)="openDialog()"></div>
+</div>
 
-<fs-clear (clear)="clear()" [show]="ngModel"></fs-clear>
+<fs-clear *ngIf="showClear" (clear)="clear()" [show]="value"></fs-clear>

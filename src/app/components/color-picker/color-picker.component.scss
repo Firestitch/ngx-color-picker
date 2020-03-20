@@ -1,6 +1,21 @@
-.fs-color-picker-preview-wrapper {
+:host {
+  outline: none;
+}
 
-  div {
+.fs-color-picker-preview-wrapper {
+  &.selected {
+    .preview {
+      border-color: transparent;
+    }
+  }
+
+  &.disabled {
+    .preview {
+      cursor: default;
+    }
+  }
+
+  .preview {
     height: 30px;
     width: 30px;
     display: inline-block;
@@ -8,10 +23,6 @@
     margin-right: 4px;
     cursor: pointer;
     border: 1px solid #ddd;
-  }
-
-  &.selected div {
-    border-color: transparent;
   }
 }
 
