@@ -1,13 +1,13 @@
 import {
   AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
-  ElementRef, EventEmitter,
+  ElementRef,
   HostBinding,
   HostListener,
   Input,
   OnDestroy,
   OnInit,
-  Optional, Output,
+  Optional,
   Renderer2
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
@@ -36,8 +36,13 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     this._value = value;
 
     if (this._ngControl) {
+      this._ngControl.control.markAsTouched();
+      this._ngControl.control.markAsDirty();
+
       this._ngControl.control.setValue(value);
     }
+
+    this._cdRef.detectChanges();
   }
 
   @HostBinding('attr.tabindex')
@@ -125,7 +130,6 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
       .subscribe((result: string | null) => {
         if (result) {
           this.value = result;
-          this._cdRef.detectChanges();
         }
       });
   }
