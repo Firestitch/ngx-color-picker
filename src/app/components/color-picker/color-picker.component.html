@@ -2,4 +2,4 @@
   <div class="preview" [ngStyle]="{ background: value }" (click)="openDialog()"></div>
 </div>
 
-<fs-clear *ngIf="showClear" (clear)="clear()" [show]="value"></fs-clear>
+<fs-clear (clear)="clear()" [show]="showClear && value"></fs-clear>

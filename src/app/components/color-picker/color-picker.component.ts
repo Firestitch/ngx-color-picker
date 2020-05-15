@@ -61,7 +61,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     private _el: ElementRef,
     private _renderer2: Renderer2,
     private _cdRef: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   public get value() {
     return this._value;
@@ -94,6 +94,8 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
       this.showClear = false;
       this._isDisabled = true;
     }
+
+    this._cdRef.detectChanges();
   }
 
   public ngAfterViewInit() {
