@@ -17,6 +17,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { DialogComponent } from '../dialog/dialog.component';
+import { createRandomColor } from '../../helpers';
 
 
 @Component({
@@ -30,6 +31,12 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @Input()
   public showClear = true;
+
+  @Input()
+  public ngModel;
+
+  @Input()
+  public prepopulate = false;
 
   @Input()
   public set value(value: string) {
@@ -83,6 +90,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
       $event.stopPropagation();
       $event.stopImmediatePropagation();
     }
+
     this.openDialog();
   }
 
@@ -93,6 +101,12 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!this._ngControl) {
       this.showClear = false;
       this._isDisabled = true;
+    }
+
+    if (this.prepopulate && !this.ngModel) {
+      setTimeout(() => {
+        this.value = createRandomColor().hex();
+      });
     }
 
     this._cdRef.detectChanges();

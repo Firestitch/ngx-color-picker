@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/cor
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import Color from 'color';
+import { createRandomColor } from '../../helpers';
 
 @Component({
   selector: 'cp-dialog',
@@ -25,15 +26,7 @@ export class DialogComponent implements OnInit {
     if (typeof this.data.color === 'string' && this.data.color !== '') {
       this.setColor(this.data.color);
     } else {
-
-
-      const color = Color().hsv();
-
-      color.color[0] = Math.floor(Math.random() * 360);
-      color.color[1] = Math.floor(Math.random() * (10) + 80);
-      color.color[2] = Math.floor(Math.random() * (10) + 80);
-
-      this.setColor(color);
+      this.setColor(createRandomColor());
     }
 
     this.paletteColor = this.color;
