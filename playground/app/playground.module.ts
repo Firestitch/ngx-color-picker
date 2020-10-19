@@ -1,3 +1,4 @@
+import { ChipComponent } from './components/chip/chip.component';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
@@ -36,7 +37,8 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     ExamplesComponent,
-    ExampleComponent
+    ExampleComponent,
+    ChipComponent
   ],
   providers: [],
 })

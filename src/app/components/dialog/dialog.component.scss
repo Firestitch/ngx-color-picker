@@ -1,18 +1,24 @@
 :host {
   display: inline-block;
 
-
-
   ::ng-deep {
     .mat-tab-label {
       min-width: 0;
       width: 50%;
       color: unset;
-      opacity: .25;
+      opacity: .45;
 
       &.mat-tab-label-active {
         opacity: 1;
       }
+    }
+
+    .header {
+      background-image: linear-gradient(to right, rgba(228, 228, 228, 0.75), rgba(228, 228, 228, 0.75)),
+                        linear-gradient(to right, black 50%, white 50%),
+                        linear-gradient(to bottom, black 50%, white 50%);
+      background-blend-mode: normal, difference, normal;
+      background-size: 10px 10px;
     }
 
     mat-tab-group {
@@ -45,6 +51,7 @@
   flex-direction: row;
   justify-content: center;
   padding: 7px;
+  user-select: none;
 
   app-color-palette {
     margin-right: 7px;
@@ -53,8 +60,10 @@
 
 .buttons {
   padding: 0 7px 7px 7px;
+  display: flex;
+  flex-direction: row;
 
   button {
-    width: 50%;
+    width: 10 0%;
   }
 }

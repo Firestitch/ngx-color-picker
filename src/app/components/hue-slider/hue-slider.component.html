@@ -1,12 +1,32 @@
-<canvas #canvas
-        class="color-slider"
-        width="30"
-        height="255">
-</canvas>
+<div class="sliders">
+  <div
+    class="slider-container slider-color"
+    (mousedown)="colorMouseDown($event)">
+    <div
+      #colorHandle
+      [style.top]="colorTop"
+      class="handle">
+    </div>
+    <canvas
+      #colorCanvas
+      width="30"
+      height="255">
+    </canvas>
+  </div>
 
-<canvas #handle
-        class="handle-slider"
-        width="30"
-        height="255"
-        (mousedown)="canvasMouseDown($event)">
-</canvas>
+  <div
+    class="slider-container slider-alpha"
+    (mousedown)="alphaMouseDown($event)">
+    <div class="background"></div>
+    <div
+      #alphaHandle
+      class="handle"
+      [style.top]="alphaTop">
+    </div>
+    <canvas
+      #alphaCanvas
+      width="30"
+      height="255">
+    </canvas>
+  </div>
+</div>

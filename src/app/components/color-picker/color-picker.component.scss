@@ -3,26 +3,12 @@
 }
 
 .fs-color-picker-preview-wrapper {
-  &.selected {
-    .preview {
-      border-color: transparent;
-    }
-  }
+  align-self: flex-end;
+  margin-right: 4px;
+  margin-bottom: 4px;
 
   &.disabled {
-    .preview {
-      cursor: default;
-    }
-  }
-
-  .preview {
-    height: 30px;
-    width: 30px;
-    display: inline-block;
-    border-radius: 50%;
-    margin-right: 4px;
-    cursor: pointer;
-    border: 1px solid #ddd;
+    cursor: default;
   }
 }
 

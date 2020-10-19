@@ -1,62 +1,96 @@
+import { takeUntil } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
 import {
   Component,
   ViewChild,
   ElementRef,
   Output,
-  HostListener,
   EventEmitter,
   Input,
-  SimpleChanges,
-  OnChanges, OnInit, ChangeDetectionStrategy
+  OnInit,
+  ChangeDetectionStrategy,
+  OnDestroy,
 } from '@angular/core';
 import Color from 'color';
 
 @Component({
   selector: 'cp-hue-slider',
   templateUrl: './hue-slider.component.html',
-  styleUrls: ['./hue-slider.component.css'],
+  styleUrls: ['./hue-slider.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HueSliderComponent implements OnInit, OnChanges {
-  @Input() color: Color;
-  @Output() changed: EventEmitter<any> = new EventEmitter();
+export class HueSliderComponent implements OnInit, OnDestroy {
 
-  @ViewChild('canvas', { static: true }) canvas: ElementRef<HTMLCanvasElement>;
-  @ViewChild('handle', { static: true }) handle: ElementRef<HTMLCanvasElement>;
+  @Input()
+  public color: Color;
 
-  private selectedHeight: number;
-  private rect: ClientRect;
+  @Output()
+  public changed: EventEmitter<any> = new EventEmitter();
+
+  @ViewChild('colorCanvas', { static: true })
+  public colorCanvas: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('colorHandle', { static: true })
+  public colorHandle: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('alphaCanvas', { static: true })
+  public alphaCanvas: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('alphaHandle', { static: true })
+  public alphaHandle: ElementRef<HTMLCanvasElement>;
+
+  public height = 255;
+  public width = 30;
+  public colorTop;
+  public alphaTop;
+
+  private _colorDragging = false;
+  private _alphaDragging = false;
   private ctx: CanvasRenderingContext2D;
-  private canvasHandle: CanvasRenderingContext2D;
-  private mousedown = false;
+  private alphaContext: CanvasRenderingContext2D;
+  private _destroy$ = new Subject();
 
-  constructor() {}
+  constructor() {
+
+    fromEvent(window, 'mouseup')
+      .pipe(
+        takeUntil(this._destroy$),
+      ).subscribe(() => {
+        this._colorDragging = false;
+        this._alphaDragging = false;
+      });
+
+    fromEvent(window, 'mousemove')
+      .pipe(
+        takeUntil(this._destroy$),
+      )
+      .subscribe((event: any) => {
+        if (this._colorDragging) {
+          this.colorMove(event.clientY - this.colorCanvas.nativeElement.getBoundingClientRect().top);
+        }
+
+        if (this._alphaDragging) {
+          this.alphaMove(event.clientY - this.alphaCanvas.nativeElement.getBoundingClientRect().top);
+        }
+      });
+  }
 
   public ngOnInit() {
+    this.colorTop = `${(this.color.hsl().hue() / 360) * this.height}px`;
+    this.alphaTop = `${(1 - this.color.alpha()) * this.height}px`;
     this.draw();
   }
 
-  public ngOnChanges(changes: SimpleChanges) {
-    this.selectedHeight = (this.color.hsl().hue() / 360) * 255;
-    this.drawHandle();
-  }
-
-  @HostListener('window:mouseup', ['$event'])
-  public onMouseUp(evt: MouseEvent) {
-    this.mousedown = false;
-  }
-
-  @HostListener('window:mousemove', ['$event'])
-  public onMouseMove(evt: MouseEvent) {
-    this.mouseMove(evt);
-  }
-
   public draw() {
+    this.drawColor();
+    this.drawAlpha();
+  }
 
-    this.ctx = this.canvas.nativeElement.getContext('2d');
+  public drawColor() {
+    this.ctx = this.colorCanvas.nativeElement.getContext('2d');
 
-    const width = this.canvas.nativeElement.width;
-    const height = this.canvas.nativeElement.height;
+    const width = this.colorCanvas.nativeElement.width;
+    const height = this.colorCanvas.nativeElement.height;
 
     this.ctx.clearRect(0, 0, width, height);
 
@@ -77,53 +111,59 @@ export class HueSliderComponent implements OnInit, OnChanges {
     this.ctx.closePath();
   }
 
-  public drawHandle() {
+  public drawAlpha() {
+    this.alphaContext = this.alphaCanvas.nativeElement.getContext('2d');
 
-    this.canvasHandle = this.handle.nativeElement.getContext('2d');
-    const width = this.handle.nativeElement.width;
-    const height = this.handle.nativeElement.height;
+    const hueGrd = this.alphaContext.createLinearGradient(90, 0.000, 90, this.height);
 
-    this.canvasHandle.clearRect(0, 0, width, height);
-    this.canvasHandle.beginPath();
-    this.canvasHandle.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-    this.canvasHandle.lineWidth = 3;
-    this.canvasHandle.rect(0, this.selectedHeight - 3, this.canvas.nativeElement.width, 5);
-    this.canvasHandle.stroke();
-    this.canvasHandle.closePath();
+    hueGrd.addColorStop(0.01,	'rgba(' + this.color.red() + ',' + this.color.green() + ',' + this.color.blue() + ', 1.000)');
+    hueGrd.addColorStop(0.99, 'rgba(' + this.color.red() + ',' + this.color.green() + ',' + this.color.blue() + ', 0.000)');
+
+    this.alphaContext.clearRect(0, 0, 30, this.height);
+    this.alphaContext.fillStyle = hueGrd;
+    this.alphaContext.fillRect(0, 0, 30, this.height);
   }
 
-  public canvasMouseDown(evt: MouseEvent) {
-    this.mousedown = true;
-    this.rect = this.canvas.nativeElement.getBoundingClientRect();
-    this.onMouseMove(evt);
+  public colorMouseDown(event: MouseEvent) {
+    this._colorDragging = true;
+    this.colorMove(event.offsetY);
   }
 
-  private mouseMove(event: MouseEvent) {
-    if (this.mousedown) {
-
-      event.stopPropagation();
-      event.preventDefault();
-
-      const top = this.rect.top;
-
-      const height = top + this.canvas.nativeElement.height;
-
-      let y = event.pageY;
-
-      if (event.pageY < top) {
-        y = top;
-      }
-
-      if (event.pageY > (height)) {
-        y = height;
-      }
-
-      this.selectedHeight = this.canvas.nativeElement.height - (height - y);
-
-      const color = this.color.hsl();
-      color.color[0] = (this.selectedHeight / 255 ) * 360;
-      this.changed.emit(color);
-      this.drawHandle();
+  public colorMove(height) {
+    if (height < 0) {
+      height = 0;
+    } else if (height > 255) {
+      height = 255;
     }
+
+    this.color = this.color.hsl();
+    this.color.color[0] = ((height) / this.height) * 360;
+    this.drawAlpha();
+    this.colorHandle.nativeElement.style.top = `${height}px`;
+    this.changed.emit(this.color);
   }
+
+  public alphaMove(height) {
+    if (height < 0) {
+      height = 0;
+    } else if (height > 255) {
+      height = 255;
+    }
+
+    const alpha = Math.round((1 - (height / this.height)) * 100) / 100;
+    this.color = this.color.alpha(alpha);
+    this.alphaHandle.nativeElement.style.top = `${height}px`;
+    this.changed.emit(this.color);
+  }
+
+  public alphaMouseDown(event: MouseEvent) {
+    this._alphaDragging = true;
+    this.alphaMove(event.offsetY);
+  }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
 }

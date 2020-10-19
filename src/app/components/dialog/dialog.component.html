@@ -1,15 +1,17 @@
-<mat-tab-group headerPosition="below" [style.background]="colorRgb" [style.color]="contrastColor">
-  <mat-tab label="HEX">
-    <div class="color" [style.background]="colorRgb">
-      <input [(ngModel)]="colorHex" name="color-hex" [style.color]="contrastColor" (ngModelChange)="hexChanged()">
-    </div>
-  </mat-tab>
-  <mat-tab label="RGB">
-    <div class="color" [style.background]="colorRgb">
-      <input [(ngModel)]="colorRgb" name="color-rgb" [style.color]="contrastColor" (ngModelChange)="rgbChanged()">
-    </div>
-  </mat-tab>
-</mat-tab-group>
+<div class="header">
+  <mat-tab-group headerPosition="below" [style.background]="colorRgb" [style.color]="contrastColor">
+    <mat-tab label="HEX">
+      <div class="color" >
+        <input [(ngModel)]="colorHex" name="color-hex" [style.color]="contrastColor" (ngModelChange)="hexChanged()">
+      </div>
+    </mat-tab>
+    <mat-tab label="RGB">
+      <div class="color" >
+        <input [(ngModel)]="colorRgb" name="color-rgb" [style.color]="contrastColor" (ngModelChange)="rgbChanged()">
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
 
 <div class=color-wrapper>
   <cp-color-palette [color]="paletteColor" (changed)="paletteChanged($event)"></cp-color-palette>
@@ -18,5 +20,6 @@
 
 <div class="buttons">
   <button mat-raised-button color="primary" (click)="select()">Select</button>
-  <button mat-button [mat-dialog-close]="null" color="primary">Cancel</button>
+  <button mat-button (click)="clear()">Clear</button>
+  <button mat-button [mat-dialog-close]="undefined">Cancel</button>
 </div>

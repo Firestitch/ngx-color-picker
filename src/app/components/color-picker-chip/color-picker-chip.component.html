@@ -1,0 +1,10 @@
+<div class="chip-container">
+  <div
+    class="chip"
+    [ngStyle]="{
+      background: color,
+      borderColor: borderColor
+    }"
+    (click)="openDialog()"></div>
+  <div [ngClass]="{ 'has-color': !!color }" class="none"></div>
+</div>

@@ -1,3 +1,4 @@
+import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
 import {
   AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
@@ -8,7 +9,8 @@ import {
   OnDestroy,
   OnInit,
   Optional,
-  Renderer2
+  Renderer2,
+  ViewChild
 } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -28,6 +30,9 @@ import { createRandomColor } from '../../helpers';
 })
 
 export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild(FsColorPickerChipComponent,{ static: true })
+  public colorChip: FsColorPickerChipComponent;
 
   @Input()
   public showClear = true;
@@ -64,7 +69,6 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
 
   constructor(
     @Optional() private _ngControl: NgControl,
-    private _dialog: MatDialog,
     private _el: ElementRef,
     private _renderer2: Renderer2,
     private _cdRef: ChangeDetectorRef,
@@ -120,13 +124,20 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  public chipChanged(color) {
+    this.value = color;
+    this._cdRef.markForCheck();
+  }
+
   public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 
-  public clear() {
+  public clear(event: MouseEvent) {
+    event.stopPropagation();
     this.value = null;
+    this.colorChip.clear();
   }
 
   public openDialog() {
@@ -134,20 +145,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
       return;
     }
 
-    const dialogRef = this._dialog.open(DialogComponent, {
-      data: { color: this.value },
-      panelClass: 'fs-color-picker-dialog-container'
-    });
-
-    dialogRef.afterClosed()
-      .pipe(
-        takeUntil(this._destroy$),
-      )
-      .subscribe((result: string | null) => {
-        if (result) {
-          this.value = result;
-        }
-      });
+    this.colorChip.openDialog();
   }
 
   private _listenValueChanges() {

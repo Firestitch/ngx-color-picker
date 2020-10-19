@@ -1,5 +1,11 @@
 <div class="fs-color-picker-preview-wrapper" [ngClass]="{ selected: value, disabled: isDisabled }">
-  <div class="preview" [ngStyle]="{ background: value }" (click)="openDialog()"></div>
+  <fs-color-picker-chip
+    [color]="value"
+    (changed)="chipChanged($event)">
+  </fs-color-picker-chip>
 </div>
 
-<fs-clear (clear)="clear()" [show]="showClear && value"></fs-clear>
+<fs-clear
+  (clear)="clear($event)"
+  [show]="showClear && value">
+</fs-clear>
