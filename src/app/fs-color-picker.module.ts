@@ -30,7 +30,7 @@ import { FsColorPickerChipComponent } from './components/color-picker-chip/color
     MatButtonModule,
     MatIconModule,
 
-    FsClearModule
+    FsClearModule,
   ],
   exports: [
     DialogComponent,
@@ -49,9 +49,4 @@ import { FsColorPickerChipComponent } from './components/color-picker-chip/color
   ]
 })
 export class FsColorPickerModule {
-  /*static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: FsColorPickerModule
-    };
-  }*/
 }

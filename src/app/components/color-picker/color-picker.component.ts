@@ -1,24 +1,13 @@
-import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
 import {
   AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef,
-  Component,
-  ElementRef,
-  HostBinding,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Renderer2,
-  ViewChild
+  Component, ElementRef, forwardRef, HostBinding, HostListener,
+  Inject, Input, OnDestroy, OnInit, Renderer2, ViewChild,
 } from '@angular/core';
-import { NgControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
-import { DialogComponent } from '../dialog/dialog.component';
+import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
 import { createRandomColor } from '../../helpers';
 
 
@@ -27,9 +16,15 @@ import { createRandomColor } from '../../helpers';
   templateUrl: 'color-picker.component.html',
   styleUrls: ['color-picker.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => FsColorPickerComponent),
+      multi: true
+    }
+  ],  
 })
-
-export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
 
   @ViewChild(FsColorPickerChipComponent,{ static: true })
   public colorChip: FsColorPickerChipComponent;
@@ -38,24 +33,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
   public showClear = true;
 
   @Input()
-  public ngModel;
-
-  @Input()
   public prepopulate = false;
-
-  @Input()
-  public set value(value: string) {
-    this._value = value;
-
-    if (this._ngControl) {
-      this._ngControl.control.markAsTouched();
-      this._ngControl.control.markAsDirty();
-
-      this._ngControl.control.setValue(value);
-    }
-
-    this._cdRef.detectChanges();
-  }
 
   @HostBinding('attr.tabindex')
   public tabindex = '-1';
@@ -63,70 +41,63 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
   @HostBinding('attr.autocomplete')
   public autocomplete = 'off';
 
+  public color;
   private _isDisabled = false;
-  private _value: string = void 0;
   private _destroy$ = new Subject<void>();
 
-  constructor(
-    @Optional() private _ngControl: NgControl,
-    private _el: ElementRef,
+  private _onTouched = () => { };
+  private _onChange = (value: any) => {};
+
+  public registerOnChange(fn: (value: any) => any): void { this._onChange = fn }
+  public registerOnTouched(fn: () => any): void { this._onTouched = fn }
+
+  public constructor(
+    @Inject(ElementRef) private _el: ElementRef,
     private _renderer2: Renderer2,
     private _cdRef: ChangeDetectorRef,
   ) { }
-
-  public get value() {
-    return this._value;
-  }
 
   public get isDisabled() {
     return this._isDisabled;
   }
 
   @HostListener('click', ['$event'])
-  public inputClick($event: Event) {
-    // To prevent open dialog if used in preview mode or disabled
-    if (!this._ngControl || this._isDisabled) {
+  public inputClick(event: Event) {
+    //To prevent open dialog if used in preview mode or disabled
+    if (this._isDisabled) {
       return
     }
 
-    if (!this.value) {
-      $event.preventDefault();
-      $event.stopPropagation();
-      $event.stopImmediatePropagation();
+    if (!this.color) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
     }
 
     this.openDialog();
   }
 
   public ngOnInit() {
-    this._listenValueChanges();
-
-    // If in preview mode
-    if (!this._ngControl) {
-      this.showClear = false;
-      this._isDisabled = true;
+    if (this.prepopulate && !this.color) {
+      this.color = createRandomColor().hex();
+      this._onChange(this.color);      
+      this._cdRef.detectChanges();
     }
-
-    if (this.prepopulate && !this.ngModel) {
-      setTimeout(() => {
-        this.value = createRandomColor().hex();
-      });
-    }
-
-    this._cdRef.detectChanges();
   }
 
   public ngAfterViewInit() {
-    if (this._ngControl) {
-      this._renderer2.setAttribute(this._el.nativeElement, 'readonly', 'readonly');
-      const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
-      this._el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', wrapper);
-    }
+    this._renderer2.setAttribute(this._el.nativeElement, 'readonly', 'readonly');
+    const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
+    this._el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', wrapper);
+  }
+
+  public writeValue(value: any): void {
+    this.color = value;
   }
 
   public chipChanged(color) {
-    this.value = color;
-    this._cdRef.markForCheck();
+    this.color = color;
+    this._onChange(color);
   }
 
   public ngOnDestroy(): void {
@@ -136,7 +107,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
 
   public clear(event: MouseEvent) {
     event.stopPropagation();
-    this.value = null;
+    this.color = null;
     this.colorChip.clear();
   }
 
@@ -146,19 +117,5 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.colorChip.openDialog();
-  }
-
-  private _listenValueChanges() {
-    if (this._ngControl) {
-      this._ngControl.valueChanges
-        .pipe(
-          takeUntil(this._destroy$),
-        )
-        .subscribe((value) => {
-          this._value = value;
-
-          this._cdRef.detectChanges();
-        });
-    }
   }
 }
