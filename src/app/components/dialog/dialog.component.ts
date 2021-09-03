@@ -29,6 +29,7 @@ export class DialogComponent implements OnInit {
   ) {}
 
   public ngOnInit() {
+
     if (typeof this.data.color === 'string' && this.data.color !== '') {
       this.setColor(this.data.color);
     } else {

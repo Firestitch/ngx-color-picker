@@ -75,8 +75,9 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
   }
 
   public openDialog() {
+
     const dialogRef = this._dialog.open(DialogComponent, {
-      data: { color: this.color },
+      data: { color: this._color },
       panelClass: 'fs-color-picker-dialog-container'
     });
 

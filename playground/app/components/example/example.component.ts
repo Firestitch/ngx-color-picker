@@ -1,16 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'example',
-  templateUrl: 'example.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: 'example.component.html'
 })
 export class ExampleComponent {
 
+  // public color = null;
   public color = '';
-
-  public change(color): void {
-    console.log(color);
-  }
 
 }
