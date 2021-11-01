@@ -12,10 +12,9 @@ import {
   Renderer2,
   ViewChild
 } from '@angular/core';
-import { NgControl } from '@angular/forms';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { createRandomColor } from '../../helpers';
 
@@ -27,9 +26,9 @@ import { createRandomColor } from '../../helpers';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
 
-  @ViewChild(FsColorPickerChipComponent,{ static: true })
+  @ViewChild(FsColorPickerChipComponent, { static: true })
   public colorChip: FsColorPickerChipComponent;
 
   @Input()
@@ -37,20 +36,6 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @Input()
   public prepopulate = false;
-
-  @Input()
-  public set value(value: string) {
-    this._value = value;
-
-    if (this._ngControl) {
-      this._ngControl.control.markAsTouched();
-      this._ngControl.control.markAsDirty();
-
-      this._ngControl.control.setValue(value);
-    }
-
-    this._cdRef.detectChanges();
-  }
 
   @HostBinding('attr.tabindex')
   public tabindex = '-1';
@@ -61,13 +46,17 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
   private _isDisabled = false;
   private _value: string = void 0;
   private _destroy$ = new Subject<void>();
+  private _onChange: (value: string | null) => void;
+  private _onTouch: () => void;
 
   constructor(
     @Optional() private _ngControl: NgControl,
     private _el: ElementRef,
     private _renderer2: Renderer2,
     private _cdRef: ChangeDetectorRef,
-  ) { }
+  ) {
+    this._ngControl.valueAccessor = this;
+  }
 
   public get value() {
     return this._value;
@@ -75,6 +64,13 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
 
   public get isDisabled() {
     return this._isDisabled;
+  }
+
+  public set value(value: string) {
+    this._value = value;
+
+    this._onChange(value);
+    this._onTouch();
   }
 
   @HostListener('click', ['$event'])
@@ -94,8 +90,6 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   public ngOnInit() {
-    this._listenValueChanges();
-
     // If in preview mode
     if (!this._ngControl) {
       this.showClear = false;
@@ -105,10 +99,11 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     if (this.prepopulate && !this._ngControl.value) {
       setTimeout(() => {
         this.value = createRandomColor().hex();
+        this._cdRef.markForCheck();
       });
     }
 
-    this._cdRef.detectChanges();
+    this._cdRef.markForCheck();
   }
 
   public ngAfterViewInit() {
@@ -119,9 +114,27 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  public writeValue(value: string | undefined) {
+    this._value = value;
+
+    this._cdRef.markForCheck();
+  }
+
+  public registerOnChange(fn: any) {
+    this._onChange = fn;
+  }
+
+  public registerOnTouched(fn: any) {
+    this._onTouch = fn;
+  }
+
+  public setDisabledState(isDisabled: boolean) {
+    this._isDisabled = isDisabled;
+    this._cdRef.markForCheck();
+  }
+
   public chipChanged(color) {
     this.value = color;
-    this._cdRef.markForCheck();
   }
 
   public ngOnDestroy(): void {
@@ -141,19 +154,5 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.colorChip.openDialog();
-  }
-
-  private _listenValueChanges() {
-    if (this._ngControl) {
-      this._ngControl.valueChanges
-        .pipe(
-          takeUntil(this._destroy$),
-        )
-        .subscribe((value) => {
-          this._value = value;
-
-          this._cdRef.detectChanges();
-        });
-    }
   }
 }
