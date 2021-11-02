@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import Color from 'color';
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
-import { createRandomColor } from '../../helpers';
 
 @Component({
   selector: 'cp-dialog',
@@ -32,8 +31,6 @@ export class DialogComponent implements OnInit {
 
     if (typeof this.data.color === 'string' && this.data.color !== '') {
       this.setColor(this.data.color);
-    } else {
-      this.setColor(createRandomColor());
     }
 
     this.paletteColor = this.color;

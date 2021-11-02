@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { randomColor } from '@firestitch/colorpicker';
 
 @Component({
   selector: 'chip-example',
@@ -6,7 +7,6 @@ import { Component } from '@angular/core';
 })
 export class ChipComponent {
 
-  // public color = null;
-  public color = '';
+  public color = randomColor();
 
 }

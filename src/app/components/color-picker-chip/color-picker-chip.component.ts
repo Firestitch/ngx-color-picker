@@ -17,7 +17,6 @@ import { takeUntil } from 'rxjs/operators';
 import Color from 'color';
 
 import { DialogComponent } from '../dialog/dialog.component';
-import { createRandomColor } from '../../helpers';
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
 
 
@@ -34,9 +33,6 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
     this._updateBorder();
   }
 
-  @Input()
-  public prepopulate = false;
-
   @Output()
   public changed = new EventEmitter<string>();
 
@@ -51,11 +47,6 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
   ) { }
 
   public ngOnInit() {
-    if (this.prepopulate && !this.color) {
-      this.color = createRandomColor().hex();
-      this.changed.next(this.color);
-    }
-
     this._updateBorder();
     this._cdRef.detectChanges();
   }

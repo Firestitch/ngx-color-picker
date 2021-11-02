@@ -1,2 +1,2 @@
-export * from './create-random-color';
+export * from './random-color';
 
