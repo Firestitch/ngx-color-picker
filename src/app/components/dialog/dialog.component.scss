@@ -63,7 +63,11 @@
   display: flex;
   flex-direction: row;
 
-  button {
-    width: 10 0%;
+  button {    
+    width: 50%;
+
+    + button {
+      margin-left: 5px;
+    }
   }
 }

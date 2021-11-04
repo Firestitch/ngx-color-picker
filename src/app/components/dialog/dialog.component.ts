@@ -28,11 +28,8 @@ export class DialogComponent implements OnInit {
   ) {}
 
   public ngOnInit() {
-
-    if (typeof this.data.color === 'string' && this.data.color !== '') {
-      this.setColor(this.data.color);
-    }
-
+    const color = this.data.color || '#000000';
+    this.setColor(color);
     this.paletteColor = this.color;
   }
 

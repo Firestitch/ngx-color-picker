@@ -7,7 +7,7 @@ import { randomColor } from '@firestitch/colorpicker';
 })
 export class ExampleComponent {
 
-  // public color = null;
-  public color = randomColor();
+  public color = null;
+  //public color = randomColor();
 
 }

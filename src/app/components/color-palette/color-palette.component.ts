@@ -47,9 +47,7 @@ export class ColorPaletteComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges) {
-
     if (changes.color) {
-
       if (!this.selectedPosition) {
         this.selectedPosition = { x: 0, y: 0 };
       }
@@ -69,7 +67,6 @@ export class ColorPaletteComponent implements OnInit, OnChanges {
 
   public drawHandle() {
     if (this.selectedPosition) {
-
       this.handle = this.handleCanvas.nativeElement.getContext('2d');
       const width = this.handleCanvas.nativeElement.width;
       const height = this.handleCanvas.nativeElement.height;
