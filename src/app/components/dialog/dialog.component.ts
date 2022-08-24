@@ -1,9 +1,13 @@
-import { HueSliderComponent } from './../hue-slider/hue-slider.component';
 import { ChangeDetectionStrategy, Component, Inject, OnInit, ViewChild } from '@angular/core';
+
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatTabGroup } from '@angular/material/tabs';
 
 import Color from 'color';
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
+import { HueSliderComponent } from './../hue-slider/hue-slider.component';
+import { isHexValue } from '../../helpers/is-hex-value';
+
 
 @Component({
   selector: 'cp-dialog',
@@ -15,6 +19,9 @@ export class DialogComponent implements OnInit {
 
   @ViewChild(HueSliderComponent, { static: true })
   public hueSlider: HueSliderComponent;
+
+  @ViewChild(MatTabGroup, { static: true })
+  private _tabGroup: MatTabGroup;
 
   public paletteColor = null;
   public colorHex = '';
@@ -57,9 +64,14 @@ export class DialogComponent implements OnInit {
   }
 
   public hexChanged() {
-    const match = this.colorHex.match(/^#?([0-9A-Fa-f]{6}|([0-9A-Fa-f]{8}))$/);
-    if (match) {
-      this.setColor(this.colorHex);
+    let hex = this.colorHex;
+
+    if (isHexValue(hex)) {
+      if (!this.colorHex.startsWith('#')) {
+        hex = `#${this.colorHex}`;
+      }
+
+      this.setColor(hex);
       this.paletteColor = this.color;
     }
   }
@@ -96,5 +108,24 @@ export class DialogComponent implements OnInit {
     }
 
     return hex;
+  }
+
+  public pasted(event: ClipboardEvent) {
+    if (this._tabGroup.selectedIndex !== 0) {
+      return;
+    }
+
+    event.preventDefault();
+
+    let insertion = event.clipboardData.getData('text');
+
+    if (isHexValue(insertion)) {
+      if (!insertion.startsWith('#')) {
+        insertion = `#${insertion}`;
+      }
+
+      this.colorHex = insertion;
+      this.hexChanged();
+    }
   }
 }

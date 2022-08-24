@@ -2,7 +2,12 @@
   <mat-tab-group headerPosition="below" [style.background]="colorRgb" [style.color]="contrastColor">
     <mat-tab label="HEX">
       <div class="color" >
-        <input [(ngModel)]="colorHex" name="color-hex" [style.color]="contrastColor" (ngModelChange)="hexChanged()">
+        <input [(ngModel)]="colorHex"
+               name="color-hex"
+               [style.color]="contrastColor"
+               (ngModelChange)="hexChanged()"
+               (paste)="pasted($event)"
+               (keydown.enter)="select()">
       </div>
     </mat-tab>
     <mat-tab label="RGB">
