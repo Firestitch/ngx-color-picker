@@ -27,6 +27,7 @@ export class DialogComponent implements OnInit {
   public colorHex = '';
   public colorRgb = '';
   public contrastColor = '';
+  public showClear = false;
   public color = Color();
 
   constructor(
@@ -36,6 +37,7 @@ export class DialogComponent implements OnInit {
 
   public ngOnInit() {
     const color = this.data.color || '#000000';
+    this.showClear = this.data.showClear;
     this.setColor(color);
     this.paletteColor = this.color;
   }

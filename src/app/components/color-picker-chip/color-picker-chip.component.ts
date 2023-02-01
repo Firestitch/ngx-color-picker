@@ -33,6 +33,8 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
     this._updateBorder();
   }
 
+  @Input() public showClear = true;
+
   @Output()
   public changed = new EventEmitter<string>();
 
@@ -66,9 +68,11 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
   }
 
   public openDialog() {
-
     const dialogRef = this._dialog.open(DialogComponent, {
-      data: { color: this._color },
+      data: { 
+        color: this._color,
+        showClear: this.showClear,
+      },
       panelClass: 'fs-color-picker-dialog-container'
     });
 
@@ -86,16 +90,14 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
   }
 
   private _updateBorder(): void {
-    let borderColor = 'efefef';
+    this.borderColor = null;
 
     if (this.color) {
       const color = Color(this.color);
-      if (!isContrastYIQDark(color.rgb(), 235) && color.alpha() > .3) {
-        borderColor = 'transparent';
+      if (isContrastYIQDark(color.rgb(), 220) || color.alpha() < .2) {
+        this.borderColor = '#e4e4e4';
       }
     }
-
-    this.borderColor = `#${borderColor}`;
   }
 
 }

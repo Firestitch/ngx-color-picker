@@ -5,6 +5,11 @@
       background: color,
       borderColor: borderColor
     }"
-    (click)="openDialog()"></div>
-  <div [ngClass]="{ 'has-color': !!color }" class="none"></div>
+    (click)="openDialog()">
+  </div>
+  <div [ngClass]="{ 'has-color': !!color }" class="color">
+    <ng-container *ngIf="!color">
+      <mat-icon>format_color_reset</mat-icon>
+    </ng-container>
+  </div>
 </div>

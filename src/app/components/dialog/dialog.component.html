@@ -25,5 +25,8 @@
 
 <div class="buttons">
   <button mat-button color="primary" (click)="select()">Select</button>
-  <button mat-button [mat-dialog-close]="undefined">Cancel</button>
+  <ng-container *ngIf="showClear">
+    <button mat-button (click)="clear()">Clear</button>
+  </ng-container>
+  <button mat-button [mat-dialog-close]="undefined">Cancel</button>  
 </div>
