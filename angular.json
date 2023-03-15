@@ -28,7 +28,8 @@
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
-              "highlight.js"
+              "highlight.js",
+              "color"
             ]
           },
           "configurations": {
