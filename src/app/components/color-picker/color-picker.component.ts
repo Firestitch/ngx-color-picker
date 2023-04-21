@@ -30,7 +30,6 @@ import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-
     multi: true
   }]  
 })
-
 export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
 
   @ViewChild(FsColorPickerChipComponent, { static: true })
@@ -143,7 +142,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy,
 
   public clear(event: MouseEvent) {
     event.stopPropagation();
-    this.value = null;
+    this.chipChanged(null);
     this.colorChip.clear();
   }
 
