@@ -10,9 +10,9 @@ import {
   OnDestroy,
   OnInit,
   Renderer2,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
-import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 
 import { Subject } from 'rxjs';
 
@@ -21,16 +21,17 @@ import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-
 
 @Component({
   selector: '[fsColorPicker]',
-  templateUrl: 'color-picker.component.html',
-  styleUrls: ['color-picker.component.scss'],
+  templateUrl: './color-picker.component.html',
+  styleUrls: ['./color-picker.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => FsColorPickerComponent),
-    multi: true
-  }]  
+    multi: true,
+  }],
 })
-export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
+export class FsColorPickerComponent implements
+  OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
 
   @ViewChild(FsColorPickerChipComponent, { static: true })
   public colorChip: FsColorPickerChipComponent;
@@ -45,7 +46,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy,
   public autocomplete = 'off';
 
   private _isDisabled = false;
-  private _value: string = void 0;
+  private _value: string;
   private _destroy$ = new Subject<void>();
   private _onChange: (value: string | null) => void;
   private _onTouch: () => void;
@@ -76,7 +77,7 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy,
   public inputClick($event: Event) {
     // To prevent open dialog if used in preview mode or disabled
     if (!this._ngControl || this._isDisabled) {
-      return
+      return;
     }
 
     if (!this.value) {
@@ -100,11 +101,27 @@ export class FsColorPickerComponent implements OnInit, AfterViewInit, OnDestroy,
   }
 
   public ngAfterViewInit() {
-    if(this._ngControl) {
+    if (this._ngControl) {
       this._renderer2.setAttribute(this._el.nativeElement, 'readonly', 'readonly');
-      const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
-      this._el.nativeElement.parentElement.parentElement.insertAdjacentElement('afterbegin', wrapper);
+
+      const el: Element = this._getFormFieldFlex(this._el.nativeElement);
+
+      if (el) {
+        const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
+        const prefix = document.createElement('div');
+        prefix.classList.add('mat-form-field-prefix');
+        prefix.append(wrapper);
+        el.prepend(prefix);
+      }
     }
+  }
+
+  private _getFormFieldFlex(el: Element) {
+    if (el.classList.contains('mat-form-field-flex')) {
+      return el;
+    }
+
+    return el.parentElement ? this._getFormFieldFlex(el.parentElement) : null;
   }
 
   public writeValue(value: string | undefined) {

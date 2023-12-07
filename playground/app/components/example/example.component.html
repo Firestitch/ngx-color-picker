@@ -1,7 +1,19 @@
 <mat-form-field>
+  <mat-label>Color</mat-label>
   <input
     fsColorPicker
     matInput
-    [(ngModel)]="color"
-    placeholder="Color">
+    [(ngModel)]="color">
+</mat-form-field>
+
+
+<br><br>
+
+<mat-form-field 
+    [appearance]="'outline'">
+    <mat-label>Color</mat-label>
+  <input
+    fsColorPicker
+    matInput
+    [(ngModel)]="color">
 </mat-form-field>
