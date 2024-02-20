@@ -18,35 +18,29 @@ import { FsColorPickerChipComponent } from './components/color-picker-chip/color
 
 
 @NgModule({
-  imports: [
-    FormsModule,
-
-    CommonModule,
-    DragDropModule,
-
-    MatTabsModule,
-    MatSliderModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-
-    FsClearModule
-  ],
-  exports: [
-    DialogComponent,
-    FsColorPickerComponent,
-    FsColorPickerChipComponent
-  ],
-  entryComponents: [
-    DialogComponent,
-  ],
-  declarations: [
-    DialogComponent,
-    FsColorPickerChipComponent,
-    HueSliderComponent,
-    ColorPaletteComponent,
-    FsColorPickerComponent
-  ]
+    imports: [
+        FormsModule,
+        CommonModule,
+        DragDropModule,
+        MatTabsModule,
+        MatSliderModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        FsClearModule
+    ],
+    exports: [
+        DialogComponent,
+        FsColorPickerComponent,
+        FsColorPickerChipComponent
+    ],
+    declarations: [
+        DialogComponent,
+        FsColorPickerChipComponent,
+        HueSliderComponent,
+        ColorPaletteComponent,
+        FsColorPickerComponent
+    ]
 })
 export class FsColorPickerModule {
   /*static forRoot(): ModuleWithProviders {
