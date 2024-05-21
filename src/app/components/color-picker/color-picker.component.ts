@@ -115,7 +115,9 @@ export class FsColorPickerComponent implements
         prefix.append(wrapper);
         el.prepend(prefix);
 
-        this._formField.updateOutlineGap();
+        setTimeout(() => {
+          this._formField.updateOutlineGap();
+        }, 1000);
       }
     }
   }
