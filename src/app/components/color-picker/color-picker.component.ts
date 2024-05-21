@@ -17,6 +17,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/for
 import { Subject } from 'rxjs';
 
 import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
+import { MatFormField } from '@angular/material/form-field';
 
 
 @Component({
@@ -57,6 +58,7 @@ export class FsColorPickerComponent implements
     private _el: ElementRef,
     private _renderer2: Renderer2,
     private _cdRef: ChangeDetectorRef,
+    private _formField: MatFormField,
   ) {
   }
 
@@ -112,6 +114,8 @@ export class FsColorPickerComponent implements
         prefix.classList.add('mat-form-field-prefix');
         prefix.append(wrapper);
         el.prepend(prefix);
+
+        this._formField.updateOutlineGap();
       }
     }
   }
