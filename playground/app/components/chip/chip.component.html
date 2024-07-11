@@ -1,1 +1,7 @@
-<fs-color-picker-chip [color]="color"></fs-color-picker-chip>
+<fs-color-picker-chip 
+  [(ngModel)]="color"
+  name="color">
+</fs-color-picker-chip>
+
+<br>
+Color: {{color}}

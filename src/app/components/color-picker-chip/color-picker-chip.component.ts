@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  forwardRef,
   Input,
   OnDestroy,
   OnInit,
@@ -16,8 +17,9 @@ import { takeUntil } from 'rxjs/operators';
 
 import Color from 'color';
 
-import { DialogComponent } from '../dialog/dialog.component';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
+import { DialogComponent } from '../dialog/dialog.component';
 
 
 @Component({
@@ -25,8 +27,13 @@ import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
   templateUrl: 'color-picker-chip.component.html',
   styleUrls: ['color-picker-chip.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => FsColorPickerChipComponent),
+    multi: true,
+  }],
 })
-export class FsColorPickerChipComponent implements OnInit, OnDestroy {
+export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlValueAccessor {
 
   @Input() public set color(value) {
     this._color = value;
@@ -37,9 +44,11 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
 
   @Output()
   public changed = new EventEmitter<string>();
-
+  
   public borderColor;
 
+  private _onChange: (value: string | null) => void;
+  private _onTouch: () => void;
   private _color: string = void 0;
   private _destroy$ = new Subject<void>();
 
@@ -47,6 +56,22 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
     private _dialog: MatDialog,
     private _cdRef: ChangeDetectorRef,
   ) { }
+
+  public writeValue(color): void {
+    this.color = color;
+  }
+
+  public registerOnChange(fn: any): void {
+    this._onChange = fn;
+  }
+
+  public registerOnTouched(fn: any): void {
+    this._onTouch = fn;
+  }
+
+  public setDisabledState?(isDisabled: boolean): void {
+    
+  }
 
   public ngOnInit() {
     this._updateBorder();
@@ -84,6 +109,7 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy {
         if (result !== undefined) {
           this.color = result;
           this.changed.next(this.color);
+          this._onChange(this.color);
           this._cdRef.markForCheck();
         }
       });
