@@ -9,5 +9,5 @@ import { randomColor } from '@firestitch/colorpicker';
 export class ChipComponent {
 
   public color = randomColor();
-
+  chipChanged(d) {}
 }

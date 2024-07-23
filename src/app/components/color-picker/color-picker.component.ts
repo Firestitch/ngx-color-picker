@@ -14,10 +14,11 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 
+import { MatFormField } from '@angular/material/form-field';
+
 import { Subject } from 'rxjs';
 
 import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
-import { MatFormField } from '@angular/material/form-field';
 
 
 @Component({

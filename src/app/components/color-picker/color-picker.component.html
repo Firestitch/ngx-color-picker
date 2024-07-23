@@ -1,8 +1,8 @@
 <div class="fs-color-picker-preview-wrapper" [ngClass]="{ selected: value, disabled: isDisabled }">
   <fs-color-picker-chip
-    [color]="value"
+    [ngModel]="value"
     [showClear]="false"
-    (changed)="chipChanged($event)">
+    (ngModelChange)="chipChanged($event)">
   </fs-color-picker-chip>
 </div>
 
