@@ -28,7 +28,7 @@ const routes: Routes = [
         FormsModule,
         FsLabelModule,
         FsExampleModule.forRoot(),
-        RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }),
+        RouterModule.forRoot(routes, {}),
     ],
     declarations: [
         AppComponent,
