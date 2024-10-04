@@ -112,23 +112,11 @@ export class FsColorPickerComponent implements
       if (el) {
         const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
         const prefix = document.createElement('div');
-        prefix.classList.add('mat-form-field-prefix');
+        prefix.classList.add('mat-mdc-form-field-icon-prefix');
         prefix.append(wrapper);
         el.prepend(prefix);
-
-        setTimeout(() => {
-          this._formField.updateOutlineGap();
-        }, 1000);
       }
     }
-  }
-
-  private _getFormFieldFlex(el: Element) {
-    if (el.classList.contains('mat-form-field-flex')) {
-      return el;
-    }
-
-    return el.parentElement ? this._getFormFieldFlex(el.parentElement) : null;
   }
 
   public writeValue(value: string | undefined) {
@@ -176,5 +164,13 @@ export class FsColorPickerComponent implements
     }
 
     this.colorChip.openDialog();
+  }
+
+  private _getFormFieldFlex(el: Element) {
+    if (el.classList.contains('mat-mdc-form-field-flex')) {
+      return el;
+    }
+
+    return el.parentElement ? this._getFormFieldFlex(el.parentElement) : null;
   }
 }

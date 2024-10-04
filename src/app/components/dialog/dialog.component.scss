@@ -2,15 +2,12 @@
   display: inline-block;
 
   ::ng-deep {
-    .mat-tab-label {
-      min-width: 0;
-      width: 50%;
-      color: unset;
-      opacity: .45;
+    .mdc-tab__text-label {
+     color: #fff !important;
+    }
 
-      &.mat-tab-label-active {
-        opacity: 1;
-      }
+    .mdc-tab-indicator__content--underline {
+      border-color: #fff !important;
     }
 
     .header {
@@ -32,16 +29,6 @@
         box-sizing: border-box;
         outline: none;
       }
-    }
-
-    .mat-tab-group-inverted-header .mat-tab-nav-bar,
-    .mat-tab-group-inverted-header .mat-tab-header {
-      border: none;
-    }
-
-    .mat-tab-group.mat-primary .mat-ink-bar,
-    .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-      background: unset;
     }
   }
 }

@@ -9,6 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { MatDialog } from '@angular/material/dialog';
 
@@ -17,15 +18,14 @@ import { takeUntil } from 'rxjs/operators';
 
 import Color from 'color';
 
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
 import { DialogComponent } from '../dialog/dialog.component';
 
 
 @Component({
   selector: 'fs-color-picker-chip',
-  templateUrl: 'color-picker-chip.component.html',
-  styleUrls: ['color-picker-chip.component.scss'],
+  templateUrl: './color-picker-chip.component.html',
+  styleUrls: ['./color-picker-chip.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{
     provide: NG_VALUE_ACCESSOR,
@@ -40,6 +40,10 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
     this._updateBorder();
   }
 
+  public get color() {
+    return this._color;
+  }
+
   @Input() public showClear = true;
 
   @Output()
@@ -49,7 +53,7 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
 
   private _onChange: (value: string | null) => void;
   private _onTouch: () => void;
-  private _color: string = void 0;
+  private _color: string;
   private _destroy$ = new Subject<void>();
 
   constructor(
@@ -70,7 +74,7 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
   }
 
   public setDisabledState?(isDisabled: boolean): void {
-    
+    //
   }
 
   public ngOnInit() {
@@ -88,17 +92,13 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
     this._cdRef.markForCheck();
   }
 
-  public get color() {
-    return this._color;
-  }
-
   public openDialog() {
     const dialogRef = this._dialog.open(DialogComponent, {
       data: { 
         color: this._color,
         showClear: this.showClear,
       },
-      panelClass: 'fs-color-picker-dialog-container'
+      panelClass: 'fs-color-picker-dialog-container',
     });
 
     dialogRef.afterClosed()
