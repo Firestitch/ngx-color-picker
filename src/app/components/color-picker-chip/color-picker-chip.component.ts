@@ -98,6 +98,7 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
         color: this._color,
         showClear: this.showClear,
       },
+      minWidth: 'auto',
       panelClass: 'fs-color-picker-dialog-container',
     });
 
