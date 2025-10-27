@@ -12,25 +12,35 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, FormsModule } from '@angular/forms';
 
 import { MatFormField } from '@angular/material/form-field';
 
 import { Subject } from 'rxjs';
 
 import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
+import { NgClass } from '@angular/common';
+import { FsColorPickerChipComponent as FsColorPickerChipComponent_1 } from '../color-picker-chip/color-picker-chip.component';
+import { FsClearModule } from '@firestitch/clear';
 
 
 @Component({
-  selector: '[fsColorPicker]',
-  templateUrl: './color-picker.component.html',
-  styleUrls: ['./color-picker.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => FsColorPickerComponent),
-    multi: true,
-  }],
+    selector: '[fsColorPicker]',
+    templateUrl: './color-picker.component.html',
+    styleUrls: ['./color-picker.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => FsColorPickerComponent),
+            multi: true,
+        }],
+    standalone: true,
+    imports: [
+        NgClass,
+        FsColorPickerChipComponent_1,
+        FormsModule,
+        FsClearModule,
+    ],
 })
 export class FsColorPickerComponent implements
   OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {

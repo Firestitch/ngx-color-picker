@@ -12,12 +12,15 @@ import {
 } from '@angular/core';
 
 import Color from 'color';
+import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'cp-color-palette',
-  templateUrl: './color-palette.component.html',
-  styleUrls: ['./color-palette.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'cp-color-palette',
+    templateUrl: './color-palette.component.html',
+    styleUrls: ['./color-palette.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [NgStyle],
 })
 export class ColorPaletteComponent implements OnInit, OnChanges {
   @Input() selectedPosition: { x: number; y: number };

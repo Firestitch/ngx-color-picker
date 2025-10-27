@@ -20,18 +20,22 @@ import Color from 'color';
 
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
 import { DialogComponent } from '../dialog/dialog.component';
+import { NgStyle } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 
 @Component({
-  selector: 'fs-color-picker-chip',
-  templateUrl: './color-picker-chip.component.html',
-  styleUrls: ['./color-picker-chip.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => FsColorPickerChipComponent),
-    multi: true,
-  }],
+    selector: 'fs-color-picker-chip',
+    templateUrl: './color-picker-chip.component.html',
+    styleUrls: ['./color-picker-chip.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => FsColorPickerChipComponent),
+            multi: true,
+        }],
+    standalone: true,
+    imports: [NgStyle, MatIcon],
 })
 export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlValueAccessor {
 

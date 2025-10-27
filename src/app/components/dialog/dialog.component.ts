@@ -1,19 +1,33 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit, ViewChild } from '@angular/core';
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatTabGroup } from '@angular/material/tabs';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogClose } from '@angular/material/dialog';
+import { MatTabGroup, MatTab } from '@angular/material/tabs';
 
 import Color from 'color';
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
 import { HueSliderComponent } from './../hue-slider/hue-slider.component';
 import { isHexValue } from '../../helpers/is-hex-value';
+import { FormsModule } from '@angular/forms';
+import { ColorPaletteComponent } from '../color-palette/color-palette.component';
+import { HueSliderComponent as HueSliderComponent_1 } from '../hue-slider/hue-slider.component';
+import { MatButton } from '@angular/material/button';
 
 
 @Component({
-  selector: 'cp-dialog',
-  templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'cp-dialog',
+    templateUrl: './dialog.component.html',
+    styleUrls: ['./dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        MatTabGroup,
+        MatTab,
+        FormsModule,
+        ColorPaletteComponent,
+        HueSliderComponent_1,
+        MatButton,
+        MatDialogClose,
+    ],
 })
 export class DialogComponent implements OnInit {
 

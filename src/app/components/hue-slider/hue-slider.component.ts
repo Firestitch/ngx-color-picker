@@ -14,10 +14,11 @@ import {
 import Color from 'color';
 
 @Component({
-  selector: 'cp-hue-slider',
-  templateUrl: './hue-slider.component.html',
-  styleUrls: ['./hue-slider.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'cp-hue-slider',
+    templateUrl: './hue-slider.component.html',
+    styleUrls: ['./hue-slider.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
 })
 export class HueSliderComponent implements OnInit, OnDestroy {
 
