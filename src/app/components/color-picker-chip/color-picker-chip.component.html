@@ -1,4 +1,4 @@
-<ng-container *ngIf="color">
+@if (color) {
   <div class="chip-container">
     <div
       class="chip"
@@ -9,9 +9,9 @@
       (click)="openDialog()">
     </div>
     <div class="color">
-      <ng-container *ngIf="!color">
+      @if (!color) {
         <mat-icon>format_color_reset</mat-icon>
-      </ng-container>
+      }
     </div>
   </div>
-</ng-container>
+}

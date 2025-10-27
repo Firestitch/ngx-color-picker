@@ -3,11 +3,11 @@
     <mat-tab label="HEX">
       <div class="color" >
         <input [(ngModel)]="colorHex"
-               name="color-hex"
-               [style.color]="contrastColor"
-               (ngModelChange)="hexChanged()"
-               (paste)="pasted($event)"
-               (keydown.enter)="select()">
+          name="color-hex"
+          [style.color]="contrastColor"
+          (ngModelChange)="hexChanged()"
+          (paste)="pasted($event)"
+          (keydown.enter)="select()">
       </div>
     </mat-tab>
     <mat-tab label="RGB">
@@ -25,8 +25,8 @@
 
 <div class="buttons">
   <button mat-button color="primary" (click)="select()">Select</button>
-  <ng-container *ngIf="showClear">
+  @if (showClear) {
     <button mat-button (click)="clear()">Clear</button>
-  </ng-container>
-  <button mat-button [mat-dialog-close]="undefined">Cancel</button>  
+  }
+  <button mat-button [mat-dialog-close]="undefined">Cancel</button>
 </div>
