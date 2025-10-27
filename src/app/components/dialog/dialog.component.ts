@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject } from '@angular/core';
 
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogClose } from '@angular/material/dialog';
 import { MatTabGroup, MatTab } from '@angular/material/tabs';
@@ -30,6 +30,9 @@ import { MatButton } from '@angular/material/button';
     ],
 })
 export class DialogComponent implements OnInit {
+  dialogRef = inject<MatDialogRef<DialogComponent>>(MatDialogRef);
+  data = inject(MAT_DIALOG_DATA);
+
 
   @ViewChild(HueSliderComponent, { static: true })
   public hueSlider: HueSliderComponent;
@@ -43,11 +46,6 @@ export class DialogComponent implements OnInit {
   public contrastColor = '';
   public showClear = false;
   public color = Color();
-
-  constructor(
-    public dialogRef: MatDialogRef<DialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data,
-  ) {}
 
   public ngOnInit() {
     const color = this.data.color || '#000000';

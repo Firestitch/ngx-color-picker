@@ -1,17 +1,4 @@
-import {
-  AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef,
-  Component,
-  ElementRef,
-  forwardRef,
-  HostBinding,
-  HostListener,
-  Injector,
-  Input,
-  OnDestroy,
-  OnInit,
-  Renderer2,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, forwardRef, HostBinding, HostListener, Injector, Input, OnDestroy, OnInit, Renderer2, ViewChild, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, FormsModule } from '@angular/forms';
 
 import { MatFormField } from '@angular/material/form-field';
@@ -44,6 +31,12 @@ import { FsClearModule } from '@firestitch/clear';
 })
 export class FsColorPickerComponent implements
   OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
+  private _injector = inject(Injector);
+  private _el = inject(ElementRef);
+  private _renderer2 = inject(Renderer2);
+  private _cdRef = inject(ChangeDetectorRef);
+  private _formField = inject(MatFormField);
+
 
   @ViewChild(FsColorPickerChipComponent, { static: true })
   public colorChip: FsColorPickerChipComponent;
@@ -63,15 +56,6 @@ export class FsColorPickerComponent implements
   private _onChange: (value: string | null) => void;
   private _onTouch: () => void;
   private _ngControl: NgControl;
-
-  constructor(
-    private _injector: Injector,
-    private _el: ElementRef,
-    private _renderer2: Renderer2,
-    private _cdRef: ChangeDetectorRef,
-    private _formField: MatFormField,
-  ) {
-  }
 
   public get value() {
     return this._value;

@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  forwardRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { MatDialog } from '@angular/material/dialog';
@@ -38,6 +28,9 @@ import { MatIcon } from '@angular/material/icon';
     imports: [NgStyle, MatIcon],
 })
 export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  private _dialog = inject(MatDialog);
+  private _cdRef = inject(ChangeDetectorRef);
+
 
   @Input() public set color(value) {
     this._color = value;
@@ -59,11 +52,6 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
   private _onTouch: () => void;
   private _color: string;
   private _destroy$ = new Subject<void>();
-
-  constructor(
-    private _dialog: MatDialog,
-    private _cdRef: ChangeDetectorRef,
-  ) { }
 
   public writeValue(color): void {
     this.color = color;
