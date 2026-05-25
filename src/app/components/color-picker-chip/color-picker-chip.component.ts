@@ -1,36 +1,33 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { NgStyle } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
 
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import Color from 'color';
 
 import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
 import { DialogComponent } from '../dialog/dialog.component';
-import { NgStyle } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
 
 
 @Component({
-    selector: 'fs-color-picker-chip',
-    templateUrl: './color-picker-chip.component.html',
-    styleUrls: ['./color-picker-chip.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [{
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => FsColorPickerChipComponent),
-            multi: true,
-        }],
-    standalone: true,
-    imports: [NgStyle, MatIcon],
+  selector: 'fs-color-picker-chip',
+  templateUrl: './color-picker-chip.component.html',
+  styleUrls: ['./color-picker-chip.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => FsColorPickerChipComponent),
+    multi: true,
+  }],
+  standalone: true,
+  imports: [NgStyle, MatIcon],
 })
 export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  private _dialog = inject(MatDialog);
-  private _cdRef = inject(ChangeDetectorRef);
-
 
   @Input() public set color(value) {
     this._color = value;
@@ -43,6 +40,12 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
 
   @Input() public showClear = true;
 
+  /**
+   * When false, clicking the chip does not open the dialog on its own. Used when the
+   * chip is embedded in the form-field directive, which drives opening via input focus.
+   */
+  @Input() public clickable = true;
+
   @Output()
   public changed = new EventEmitter<string>();
   
@@ -52,6 +55,8 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
   private _onTouch: () => void;
   private _color: string;
   private _destroy$ = new Subject<void>();
+  private _dialog = inject(MatDialog);
+  private _cdRef = inject(ChangeDetectorRef);
 
   public writeValue(color): void {
     this.color = color;
@@ -84,20 +89,32 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
     this._cdRef.markForCheck();
   }
 
-  public openDialog() {
-    const dialogRef = this._dialog.open(DialogComponent, {
-      data: { 
+  public chipClick() {
+    // When non-interactive (embedded in the form-field directive), let the click bubble
+    // so the form field focuses the input and the directive opens the dialog instead.
+    if (!this.clickable) {
+      return;
+    }
+
+    this.openDialog();
+  }
+
+  public openDialog(): Observable<string | null | undefined> {
+    const afterClosed$ = this._dialog.open(DialogComponent, {
+      data: {
         color: this._color,
         showClear: this.showClear,
       },
       minWidth: 'auto',
       panelClass: 'fs-color-picker-dialog-container',
-    });
-
-    dialogRef.afterClosed()
+      restoreFocus: false,
+    })
+      .afterClosed()
       .pipe(
         takeUntil(this._destroy$),
-      )
+      );
+
+    afterClosed$
       .subscribe((result: string | null | undefined) => {
         if (result !== undefined) {
           this.color = result;
@@ -106,6 +123,8 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
           this._cdRef.markForCheck();
         }
       });
+
+    return afterClosed$;
   }
 
   private _updateBorder(): void {

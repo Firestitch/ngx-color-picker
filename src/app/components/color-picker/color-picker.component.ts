@@ -1,42 +1,38 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, forwardRef, HostBinding, HostListener, Injector, Input, OnDestroy, OnInit, Renderer2, ViewChild, inject } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Injector, Input, OnDestroy, OnInit, Renderer2, ViewChild, forwardRef, inject } from '@angular/core';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 
-import { MatFormField } from '@angular/material/form-field';
+
+import { FsClearModule } from '@firestitch/clear';
 
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { FsColorPickerChipComponent as FsColorPickerChipComponent_1 } from '../color-picker-chip/color-picker-chip.component';
 
 import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
-import { NgClass } from '@angular/common';
-import { FsColorPickerChipComponent as FsColorPickerChipComponent_1 } from '../color-picker-chip/color-picker-chip.component';
-import { FsClearModule } from '@firestitch/clear';
 
 
 @Component({
-    selector: '[fsColorPicker]',
-    templateUrl: './color-picker.component.html',
-    styleUrls: ['./color-picker.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [{
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => FsColorPickerComponent),
-            multi: true,
-        }],
-    standalone: true,
-    imports: [
-        NgClass,
-        FsColorPickerChipComponent_1,
-        FormsModule,
-        FsClearModule,
-    ],
+  selector: '[fsColorPicker]',
+  templateUrl: './color-picker.component.html',
+  styleUrls: ['./color-picker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => FsColorPickerComponent),
+    multi: true,
+  }],
+  standalone: true,
+  imports: [
+    NgClass,
+    FsColorPickerChipComponent_1,
+    FormsModule,
+    FsClearModule,
+  ],
 })
 export class FsColorPickerComponent implements
   OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
-  private _injector = inject(Injector);
-  private _el = inject(ElementRef);
-  private _renderer2 = inject(Renderer2);
-  private _cdRef = inject(ChangeDetectorRef);
-  private _formField = inject(MatFormField);
-
 
   @ViewChild(FsColorPickerChipComponent, { static: true })
   public colorChip: FsColorPickerChipComponent;
@@ -51,11 +47,16 @@ export class FsColorPickerComponent implements
   public autocomplete = 'off';
 
   private _isDisabled = false;
+  private _dialogOpen = false;
   private _value: string;
   private _destroy$ = new Subject<void>();
   private _onChange: (value: string | null) => void;
   private _onTouch: () => void;
   private _ngControl: NgControl;
+  private _injector = inject(Injector);
+  private _el = inject(ElementRef);
+  private _renderer2 = inject(Renderer2);
+  private _cdRef = inject(ChangeDetectorRef);
 
   public get value() {
     return this._value;
@@ -70,20 +71,26 @@ export class FsColorPickerComponent implements
     return this._isDisabled;
   }
 
-  @HostListener('click', ['$event'])
-  public inputClick($event: Event) {
-    // To prevent open dialog if used in preview mode or disabled
-    if (!this._ngControl || this._isDisabled) {
+  // Open when the field is clicked or focused so the picker is attached to the input
+  // itself (including the form-field container click and the embedded swatch).
+  @HostListener('focus')
+  @HostListener('click')
+  public openDialog() {
+    // Don't open in preview mode, when disabled, or if a dialog is already open.
+    if (!this._ngControl || this._isDisabled || this._dialogOpen) {
       return;
     }
 
-    if (!this.value) {
-      $event.preventDefault();
-      $event.stopPropagation();
-      $event.stopImmediatePropagation();
-    }
+    this._dialogOpen = true;
 
-    this.openDialog();
+    this.colorChip.openDialog()
+      .pipe(
+        takeUntil(this._destroy$),
+      )
+      .subscribe(() => {
+        this._dialogOpen = false;
+        this._cdRef.markForCheck();
+      });
   }
 
   public ngOnInit() {
@@ -102,6 +109,7 @@ export class FsColorPickerComponent implements
       this._renderer2.setAttribute(this._el.nativeElement, 'readonly', 'readonly');
 
       const el: Element = this._getFormFieldFlex(this._el.nativeElement);
+      
 
       if (el) {
         const wrapper = this._el.nativeElement.querySelector('.fs-color-picker-preview-wrapper');
@@ -120,7 +128,12 @@ export class FsColorPickerComponent implements
   }
 
   public updateInput() {
-    this._el.nativeElement.value = this.value || '';
+    const input = this._el.nativeElement;
+    input.value = this.value || '';
+    // Programmatic value changes don't emit an 'input' event, so matInput (which owns the
+    // form-field's floating-label/empty state) won't notice. Dispatch one so the label
+    // floats/unfloats correctly when a color is selected or cleared.
+    input.dispatchEvent(new Event('input'));
   }
 
   public registerOnChange(fn: any) {
@@ -150,14 +163,8 @@ export class FsColorPickerComponent implements
     event.stopPropagation();
     this.chipChanged(null);
     this.colorChip.clear();
-  }
-
-  public openDialog() {
-    if (this._isDisabled) {
-      return;
-    }
-
-    this.colorChip.openDialog();
+    // Drop focus so the now-empty field's label settles back down instead of staying floated.
+    this._el.nativeElement.blur();
   }
 
   private _getFormFieldFlex(el: Element) {
