@@ -1,11 +1,11 @@
-<div class="fs-color-picker-preview-wrapper" [ngClass]="{ selected: value, disabled: isDisabled }">
+<div
+    class="fs-color-picker-preview-wrapper"
+    [ngClass]="{ selected: value, disabled: isDisabled }">
   <fs-color-picker-chip
     [ngModel]="value"
-    [showClear]="false"
     (ngModelChange)="chipChanged($event)">
   </fs-color-picker-chip>
 </div>
-
 <fs-clear
   (clear)="clear($event)"
   [show]="showClear"

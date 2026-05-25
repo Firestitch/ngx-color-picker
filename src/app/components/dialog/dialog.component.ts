@@ -10,6 +10,7 @@ import { isHexValue } from '../../helpers/is-hex-value';
 import { FormsModule } from '@angular/forms';
 import { ColorPaletteComponent } from '../color-palette/color-palette.component';
 import { HueSliderComponent as HueSliderComponent_1 } from '../hue-slider/hue-slider.component';
+import { ColorSwatchesComponent } from '../color-swatches/color-swatches.component';
 import { MatButton } from '@angular/material/button';
 
 
@@ -25,6 +26,7 @@ import { MatButton } from '@angular/material/button';
         FormsModule,
         ColorPaletteComponent,
         HueSliderComponent_1,
+        ColorSwatchesComponent,
         MatButton,
         MatDialogClose,
     ],
@@ -41,6 +43,7 @@ export class DialogComponent implements OnInit {
   private _tabGroup: MatTabGroup;
 
   public paletteColor = null;
+  public selectedTab = 0;
   public colorHex = '';
   public colorRgb = '';
   public contrastColor = '';
@@ -98,6 +101,11 @@ export class DialogComponent implements OnInit {
   public paletteChanged(color) {
     this.setColor(color);
     this.hueSlider.drawAlpha();
+  }
+
+  public swatchSelected(color) {
+    this.setColor(color);
+    this.select();
   }
 
   public clear() {

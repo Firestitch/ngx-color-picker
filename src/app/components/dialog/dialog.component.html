@@ -1,5 +1,9 @@
 <div class="header">
-  <mat-tab-group headerPosition="below" [style.background]="colorRgb" [style.color]="contrastColor">
+  <mat-tab-group
+      headerPosition="below"
+      [style.background]="colorRgb"
+      [style.color]="contrastColor"
+      (selectedIndexChange)="selectedTab = $event">
     <mat-tab label="HEX">
       <div class="color" >
         <input [(ngModel)]="colorHex"
@@ -15,13 +19,24 @@
         <input [(ngModel)]="colorRgb" name="color-rgb" [style.color]="contrastColor" (ngModelChange)="rgbChanged()">
       </div>
     </mat-tab>
+    <mat-tab label="Palette">
+      <div class="color" >
+        <span [style.color]="contrastColor">{{ colorHex }}</span>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </div>
 
-<div class=color-wrapper>
-  <cp-color-palette [color]="paletteColor" (changed)="paletteChanged($event)"></cp-color-palette>
-  <cp-hue-slider [color]="color" (changed)="sliderChanged($event)"></cp-hue-slider>
-</div>
+@if (selectedTab === 2) {
+  <div class="palette-wrapper">
+    <cp-color-swatches (selected)="swatchSelected($event)"></cp-color-swatches>
+  </div>
+} @else {
+  <div class="color-wrapper">
+    <cp-color-palette [color]="paletteColor" (changed)="paletteChanged($event)"></cp-color-palette>
+    <cp-hue-slider [color]="color" (changed)="sliderChanged($event)"></cp-hue-slider>
+  </div>
+}
 
 <div class="buttons">
   <button mat-button color="primary" (click)="select()">Select</button>

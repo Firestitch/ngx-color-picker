@@ -1,0 +1,19 @@
+<mat-form-field class="palette-select" subscriptSizing="dynamic">
+  <mat-select [(ngModel)]="selectedPalette">
+    @for (palette of palettes; track palette.name) {
+      <mat-option [value]="palette">{{ palette.name }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
+<div class="swatches">
+  @for (color of selectedPalette.colors; track color) {
+    <button
+      type="button"
+      class="swatch"
+      [style.background]="color"
+      [title]="color"
+      (click)="selectColor(color)">
+    </button>
+  }
+</div>
