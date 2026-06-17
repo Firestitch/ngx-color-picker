@@ -36,7 +36,7 @@ export class DialogComponent implements OnInit {
   data = inject(MAT_DIALOG_DATA);
 
 
-  @ViewChild(HueSliderComponent, { static: true })
+  @ViewChild(HueSliderComponent)
   public hueSlider: HueSliderComponent;
 
   @ViewChild(MatTabGroup, { static: true })
@@ -100,7 +100,7 @@ export class DialogComponent implements OnInit {
 
   public paletteChanged(color) {
     this.setColor(color);
-    this.hueSlider.drawAlpha();
+    this.hueSlider?.drawAlpha();
   }
 
   public swatchSelected(color) {
