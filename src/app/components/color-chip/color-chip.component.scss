@@ -1,0 +1,36 @@
+@use '@firestitch/style/variables' as variables;
+  
+.chip-container {
+  outline: none;
+  position: relative;
+  display: block;
+  height: 22px;
+  width: 22px;
+  user-select: none;
+    
+  .chip {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid transparent;
+    z-index: 1;
+    transform: rotate(-45deg);
+  }
+
+  .color {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+
+    mat-icon {
+      color: variables.$disabled-color;
+    }
+  }
+}
+
+::ng-deep .fs-color-picker-dialog-container .mat-dialog-container {
+  padding: 0;
+}

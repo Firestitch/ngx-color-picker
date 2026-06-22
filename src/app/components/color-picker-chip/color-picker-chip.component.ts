@@ -1,17 +1,12 @@
-import { NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, forwardRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, Output, ViewChild, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import { MatDialog } from '@angular/material/dialog';
-import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
 
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
-import Color from 'color';
 
-import { isContrastYIQDark } from '../../helpers/is-contrast-yiq-dark';
-import { DialogComponent } from '../dialog/dialog.component';
+import { FsColorChipComponent } from '../color-chip/color-chip.component';
 
 
 @Component({
@@ -25,13 +20,14 @@ import { DialogComponent } from '../dialog/dialog.component';
     multi: true,
   }],
   standalone: true,
-  imports: [NgStyle, MatIcon],
+  imports: [FsColorChipComponent, MatIconButton],
 })
-export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class FsColorPickerChipComponent implements OnDestroy, ControlValueAccessor {
+
+  @ViewChild(FsColorChipComponent) public colorChip: FsColorChipComponent;
 
   @Input() public set color(value) {
     this._color = value;
-    this._updateBorder();
   }
 
   public get color() {
@@ -55,7 +51,6 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
   private _onTouch: () => void;
   private _color: string;
   private _destroy$ = new Subject<void>();
-  private _dialog = inject(MatDialog);
   private _cdRef = inject(ChangeDetectorRef);
 
   public writeValue(color): void {
@@ -71,12 +66,19 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
   }
 
   public setDisabledState?(isDisabled: boolean): void {
-    //
+    // isDisabled is not used
   }
 
-  public ngOnInit() {
-    this._updateBorder();
-    this._cdRef.detectChanges();
+  public chipClick() {
+    this.colorChip.openDialog()
+      .subscribe((result: string | null | undefined) => {
+        if (result !== undefined) {
+          this.color = result;
+          this.changed.next(this.color);
+          this._onChange(this.color);
+          this._cdRef.markForCheck();
+        }
+      });
   }
 
   public ngOnDestroy(): void {
@@ -87,55 +89,6 @@ export class FsColorPickerChipComponent implements OnInit, OnDestroy, ControlVal
   public clear() {
     this.color = null;
     this._cdRef.markForCheck();
-  }
-
-  public chipClick() {
-    // When non-interactive (embedded in the form-field directive), let the click bubble
-    // so the form field focuses the input and the directive opens the dialog instead.
-    if (!this.clickable) {
-      return;
-    }
-
-    this.openDialog();
-  }
-
-  public openDialog(): Observable<string | null | undefined> {
-    const afterClosed$ = this._dialog.open(DialogComponent, {
-      data: {
-        color: this._color,
-        showClear: this.showClear,
-      },
-      minWidth: 'auto',
-      panelClass: 'fs-color-picker-dialog-container',
-      restoreFocus: false,
-    })
-      .afterClosed()
-      .pipe(
-        takeUntil(this._destroy$),
-      );
-
-    afterClosed$
-      .subscribe((result: string | null | undefined) => {
-        if (result !== undefined) {
-          this.color = result;
-          this.changed.next(this.color);
-          this._onChange(this.color);
-          this._cdRef.markForCheck();
-        }
-      });
-
-    return afterClosed$;
-  }
-
-  private _updateBorder(): void {
-    this.borderColor = null;
-
-    if (this.color) {
-      const color = Color(this.color);
-      if (isContrastYIQDark(color.rgb(), 220) || color.alpha() < .2) {
-        this.borderColor = '#e4e4e4';
-      }
-    }
   }
 
 }

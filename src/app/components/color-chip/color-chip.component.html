@@ -1,0 +1,16 @@
+<div class="chip-container">
+  <div
+    class="chip"
+    [ngStyle]="{
+        background: color,
+        borderColor: borderColor
+      }">
+  </div>
+  <div class="color">
+    @if (!color) {
+      <mat-icon>
+        format_color_reset
+      </mat-icon>
+    }
+  </div>
+</div>

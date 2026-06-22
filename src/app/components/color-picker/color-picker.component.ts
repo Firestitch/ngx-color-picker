@@ -8,9 +8,7 @@ import { FsClearModule } from '@firestitch/clear';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { FsColorPickerChipComponent as FsColorPickerChipComponent_1 } from '../color-picker-chip/color-picker-chip.component';
-
-import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-chip.component';
+import { FsColorChipComponent } from '../color-chip';
 
 
 @Component({
@@ -26,7 +24,7 @@ import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-
   standalone: true,
   imports: [
     NgClass,
-    FsColorPickerChipComponent_1,
+    FsColorChipComponent,
     FormsModule,
     FsClearModule,
   ],
@@ -34,8 +32,8 @@ import { FsColorPickerChipComponent } from './../color-picker-chip/color-picker-
 export class FsColorPickerComponent implements
   OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
 
-  @ViewChild(FsColorPickerChipComponent, { static: true })
-  public colorChip: FsColorPickerChipComponent;
+  @ViewChild(FsColorChipComponent, { static: true })
+  public colorChip: FsColorChipComponent;
 
   @Input()
   public showClear = true;
@@ -73,9 +71,13 @@ export class FsColorPickerComponent implements
 
   // Open when the field is clicked or focused so the picker is attached to the input
   // itself (including the form-field container click and the embedded swatch).
-  @HostListener('focus')
-  @HostListener('click')
-  public openDialog() {
+  @HostListener('focus', ['$event'])
+  @HostListener('click', ['$event'])
+  public openDialog(event: Event) {
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    event.preventDefault();
+    
     // Don't open in preview mode, when disabled, or if a dialog is already open.
     if (!this._ngControl || this._isDisabled || this._dialogOpen) {
       return;
@@ -87,7 +89,9 @@ export class FsColorPickerComponent implements
       .pipe(
         takeUntil(this._destroy$),
       )
-      .subscribe(() => {
+      .subscribe((result) => {
+        this.colorChip.color = result;
+        this.chipChanged(result); 
         this._dialogOpen = false;
         this._cdRef.markForCheck();
       });

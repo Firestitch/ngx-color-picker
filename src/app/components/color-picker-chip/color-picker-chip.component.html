@@ -1,17 +1,6 @@
-<div class="chip-container">
-  <div
-    class="chip"
-    [ngStyle]="{
-        background: color,
-        borderColor: borderColor
-      }"
-    (click)="chipClick()">
-  </div>
-  <div class="color">
-    @if (!color) {
-      <mat-icon>
-        format_color_reset
-      </mat-icon>
-    }
-  </div>
-</div>
+<button
+    mat-icon-button
+    (click)="chipClick()"
+    type="button">
+  <fs-color-chip [color]="color"></fs-color-chip>
+</button>
