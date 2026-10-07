@@ -89,10 +89,16 @@ export class FsColorPickerComponent implements
       .pipe(
         takeUntil(this._destroy$),
       )
-      .subscribe((result) => {
-        this.colorChip.color = result;
-        this.chipChanged(result); 
+      .subscribe((result: string | null | undefined) => {
         this._dialogOpen = false;
+
+        // Cancel, Esc and backdrop click close with undefined; leave the value alone.
+        // Clear closes with null, which still empties the field.
+        if (result !== undefined) {
+          this.colorChip.color = result;
+          this.chipChanged(result);
+        }
+
         this._cdRef.markForCheck();
       });
   }
