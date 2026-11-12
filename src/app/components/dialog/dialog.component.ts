@@ -75,8 +75,11 @@ export class DialogComponent implements OnInit {
   public rgbChanged() {
     const match = this.colorRgb.match(/rgb\(\d+\s*,\s*\d+\s*,\s*\d+\s*\)/i);
     if (match) {
-      this.setColor(this.colorRgb);
+      // Show the color but leave the box as typed; inputBlurred() tidies it.
+      const typed = this.colorRgb;
+      this.setColor(typed);
       this.paletteColor = this.color;
+      this.colorRgb = typed;
     }
   }
 
@@ -88,9 +91,20 @@ export class DialogComponent implements OnInit {
         hex = `#${this.colorHex}`;
       }
 
+      // Show the color but leave the box as typed: "123" is already a whole short code,
+      // and writing "#112233" back mid-typing would push the next keys after it.
+      // inputBlurred() puts the box in its full form once the person leaves it.
+      const typed = this.colorHex;
       this.setColor(hex);
       this.paletteColor = this.color;
+      this.colorHex = typed;
     }
+  }
+
+  // Leaving the HEX or RGB box rewrites both in the color's full form ("#123" reads
+  // "#112233"), and puts back the current color if what was typed is incomplete.
+  public inputBlurred() {
+    this.setColor(this.color);
   }
 
   public sliderChanged(color) {
@@ -146,8 +160,9 @@ export class DialogComponent implements OnInit {
         insertion = `#${insertion}`;
       }
 
-      this.colorHex = insertion;
-      this.hexChanged();
+      // A pasted code arrives whole, so the box can show its full form straight away.
+      this.setColor(insertion);
+      this.paletteColor = this.color;
     }
   }
 }

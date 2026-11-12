@@ -10,13 +10,14 @@
           name="color-hex"
           [style.color]="contrastColor"
           (ngModelChange)="hexChanged()"
+          (blur)="inputBlurred()"
           (paste)="pasted($event)"
           (keydown.enter)="select()">
       </div>
     </mat-tab>
     <mat-tab label="RGB">
       <div class="color" >
-        <input [(ngModel)]="colorRgb" name="color-rgb" [style.color]="contrastColor" (ngModelChange)="rgbChanged()">
+        <input [(ngModel)]="colorRgb" name="color-rgb" [style.color]="contrastColor" (ngModelChange)="rgbChanged()" (blur)="inputBlurred()">
       </div>
     </mat-tab>
     <mat-tab label="Palette">
